@@ -1,0 +1,52 @@
+{
+    "name": "Algorithms And Data Structures with Python",
+    "dockerFile": "Dockerfile",
+    "settings": {
+		"workbench.iconTheme": "material-icon-theme",
+		"workbench.colorTheme": "Community Material Theme Ocean",
+		"editor.fontSize": 15,
+		"editor.wordWrap": "on",
+		"workbench.tree.indent": 25,
+		"workbench.tree.renderIndentGuides": "always",
+		"files.autoSave": "afterDelay",
+		"files.insertFinalNewline": true,
+		"files.trimFinalNewlines": true,
+		"files.trimTrailingWhitespace": true,
+		"editor.mouseWheelZoom": true,
+		"explorer.confirmDelete": false,
+		"python.linting.enabled": true,
+		"python.linting.flake8Enabled": true,
+		"editor.formatOnSave": true,
+		"python.linting.lintOnSave": true,
+		"python.linting.mypyArgs": [
+			"--follow-imports=silent",
+			"--ignore-missing-imports",
+			"--show-column-numbers"
+		],
+		"python.linting.flake8Args": [
+			"--max-line-length",
+			"200"
+		],
+        // "terminal.integrated.shell.linux": "/bin/bash",
+        "python.pythonPath": "/usr/local/bin/python"
+    },
+    "extensions": [
+        "equinusocio.vsc-community-material-theme",
+		"ms-toolsai.jupyter-keymap",
+		"pkief.material-icon-theme",
+		"equinusocio.vsc-material-theme",
+		"equinusocio.vsc-material-theme-icons",
+		"almenon.arepl",
+		"ms-toolsai.jupyter",
+		"ms-toolsai.jupyter-renderers",
+		"ms-vsliveshare.vsliveshare",
+		"esbenp.prettier-vscode",
+		"ms-python.vscode-pylance",
+		"ms-python.python",
+		"njpwerner.autodocstring",
+		"shardulm94.trailing-spaces",
+		"mosapride.zenkaku",
+		"knttnk.snippet-utilities",
+    ]
+
+}
