@@ -1,4 +1,4 @@
-########################################################################################
+#########################################################################################
 # AVL木: 以下の操作を全て O(log N) で行う
 # insert(key, value): key-value の挿入.
 # delete(key): key-value の削除
@@ -8,12 +8,16 @@
 # lower_bound(x): key x 以上のモノの中で最小のkeyを取得
 # upper_bound(x): key x 未満のモノの中で最大のkeyを取得
 # kth_elements(k): k番目の小さいkeyを返す（0-index）
-########################################################################################
+#########################################################################################
 
-########################################################################################
+#########################################################################################
 # Verify
-# - ABC217 D - Cutting Woods: https://atcoder.jp/contests/abc217/submissions/30910492
-########################################################################################
+# ARC033 C - データ構造 (1123ms): https://atcoder.jp/contests/arc033/submissions/30928167
+# 参考
+# https://stnkien.hatenablog.com/entry/avl-tree
+# http://wwwa.pikara.ne.jp/okojisan/avl-tree/index.html
+# https://qiita.com/mikecat_mixc/items/e9f8248de2ae7f7a0a29
+#########################################################################################
 
 
 class Node:
@@ -24,9 +28,8 @@ class Node:
         value (any): ノードの値 (保存したいデータ)
         left (Node): 左の子ノード
         right (Node): 右の子ノード
-        bias (int): 平衡度. (左の部分木の高さ) - (右の部分木の高さ)
-        size (int): 自分自身を根とする部分木のサイズ（自分を含む）
-
+        bias (int): 平衡度 = (左の部分木の高さ) - (右の部分木の高さ)
+        size (int): 部分木のサイズ（自分を含む）
     """
 
     def __init__(self, key, value):
@@ -42,130 +45,130 @@ class Node:
 
 
 class AVLTree:
-    """AVL木（非再帰）
+    """AVL木: 非再帰, 重複無し
 
     Attributes:
-        root (Node): 根ノード. defauld=None
+        root (Node): 根ノード. default to None
     """
 
     def __init__(self):
         self.root = None
 
-    def _rotateL(self, node: Node):
-        """nodeに対して左1重回転を行う
+    def _rotateL(self, u: Node):
+        """uに対する左1重回転
 
         Args:
-            node (Node): 左回転を行う対象のNode
+            u (Node): 左回転を行う部分木
 
         Returns:
-            Node: 左回転をした結果の, nodeの親ノード
+            Node: 左回転をした結果の部分木
         """
-        pivot = node.right
+        v = u.right
 
         # sizeの修正
-        pivot.size = node.size
-        node.size -= (pivot.right.size + 1) if pivot.right is not None else 1
+        v.size = u.size
+        u.size -= (v.right.size + 1) if v.right is not None else 1
 
         # 繋ぎ変え
-        node.right = pivot.left
-        pivot.left = node
+        u.right = v.left
+        v.left = u
 
         # biasの修正
-        if pivot.bias == -1:
-            pivot.bias = node.bias = 0
+        if v.bias == -1:
+            v.bias = u.bias = 0
         else:
-            pivot.bias = 1
-            node.bias = -1
-        return pivot
+            v.bias = 1
+            u.bias = -1
+        return v
 
-    def _rotateR(self, node: Node):
-        """nodeに対して右1重回転を行う
+    def _rotateR(self, u: Node):
+        """uに対する右1重回転
 
         Args:
-            node (Node): 左回転を行う対象のNode
+            u (Node): 右回転を行う部分木
 
         Returns:
-            Node: 右回転をした結果の, nodeの親ノード
+            Node: 右回転をした結果の部分木
         """
-        pivot = node.left
+        v = u.left
 
         # sizeの修正
-        pivot.size = node.size
-        node.size -= (pivot.left.size + 1) if pivot.left is not None else 1
+        v.size = u.size
+        u.size -= (v.left.size + 1) if v.left is not None else 1
 
         # 繋ぎ変え
-        node.left = pivot.right
-        pivot.right = node
+        u.left = v.right
+        v.right = u
 
         # biasの修正
-        if pivot.bias == 1:
-            pivot.bias = node.bias = 0
+        if v.bias == 1:
+            v.bias = u.bias = 0
         else:
-            pivot.bias = -1
-            node.bias = 1
-        return pivot
+            v.bias = -1
+            u.bias = 1
+        return v
 
-    def _update_bias(self, node: Node):
-        """2重回転した際のbiasの変更
+    def _update_bias(self, u: Node):
+        """2重回転後のbiasの変更
 
         Args:
-            node (Node): 2重回転を行ったあとの, 親ノード
+            u (Node): 2重回転後の部分木
         """
-        if node.bias == 1:
-            node.right.bias = -1
-            node.left.bias = 0
-        elif node.bias == -1:
-            node.right.bias = 0
-            node.left.bias = 1
+        if u.bias == 1:
+            u.right.bias = -1
+            u.left.bias = 0
+        elif u.bias == -1:
+            u.right.bias = 0
+            u.left.bias = 1
         else:
-            node.right.bias = 0
-            node.left.bias = 0
-        node.bias = 0
+            u.right.bias = 0
+            u.left.bias = 0
+        u.bias = 0
 
-    def _rotateLR(self, node: Node):
-        """nodeに対して左・右2重回転を行う
+    def _rotateLR(self, u: Node):
+        """uに対する左・右2重回転
 
         Args:
-            node (Node): 左・右回転を行う対象のNode
+            u (Node): 対象の部分木
 
         Returns:
-            Node: 左・右回転をした結果の, nodeの親ノード
+            Node: 左・右回転をした結果の部分木
         """
-        v = node.left
+        v = u.left
         w = v.right
 
         # sizeの修正
-        w.size = node.size
-        node.size -= (v.size) - (w.right.size if w.right is not None else 0)
+        w.size = u.size
+        u.size -= (v.size) - (w.right.size if w.right is not None else 0)
         v.size -= (w.right.size + 1 if w.right is not None else 1)
 
         # vに対して左回転
         v.right = w.left
         w.left = v
 
-        # nodeに対して右回転
-        node.left = w.right
-        w.right = node
+        # uに対して右回転
+        u.left = w.right
+        w.right = u
 
         # biasの変更
         self._update_bias(w)
         return w
 
-    def _rotateRL(self, node: Node):
-        """nodeに対して右・左2重回転を行う
+    def _rotateRL(self, u: Node):
+        """uに対する右・左2重回転
 
         Args:
-            node (Node): 右・左回転を行う対象のNode
+            u (Node): 対象の部分木
 
         Returns:
-            Node: 右・左回転をした結果の, nodeの親ノード
+            Node: 右・左回転をした結果の部分木
         """
-        v = node.right
+        v = u.right
         w = v.left
 
         # sizeの修正
-        w.size = node.size
-        node.size -= (v.size) - (w.left.size if w.left is not None else 0)
+        w.size = u.size
+        u.size -= (v.size) - (w.left.size if w.left is not None else 0)
         v.size -= (w.left.size + 1 if w.left is not None else 1)
 
         # vに対して右回転
@@ -173,27 +176,29 @@ class AVLTree:
         w.right = v
 
         # nodeに対して左回転
-        node.right = w.left
-        w.left = node
+        u.right = w.left
+        w.left = u
 
         # biasの変更
         self._update_bias(w)
         return w
 
-    def _rotate(self, path: list, t: int):
+    def _balance(self, path: list, t: int):
         """path上の頂点の回転を行う
 
         Args:
             path (List[Node, int]): 回転を行うパス上の頂点
             t (int): deleteのとき-1, insertのとき1
+
+        Note:
+            - 高さが変わると, その後のnodeで修正が必要になる
+            - |bias| = 2 なら, 回転が必要になる
         """
         child = None
         active = True
         while path:
             u, direction = path.pop()
             u.size += t
-            if active:
-                u.bias += t * direction
 
             # 回転などにより, 子に変更があったら繋ぎ変える
             if child is not None:
@@ -202,36 +207,42 @@ class AVLTree:
                 else:
                     u.right = child
 
+                # 削除: |bias| = 1 なら その後も平衡
                 if (child.bias != 0) and (t == -1):
+                    active = False
+
+                # 挿入: 回転後のbiasが0になる
+                if (child.bias == 0) and (t == 1):
                     active = False
 
                 child = None
 
+            if active:
+                u.bias += t * direction
+            else:
+                continue
+
+            # 挿入: bias=0 なら以降変更必要なし
             if (u.bias == 0) and (t == 1):
                 active = False
 
-            if (u.bias != 0) and (t == -1):
+            # 削除: |bias|=1 なら以降変更必要なし
+            elif (abs(u.bias) == 1) and (t == -1):
                 active = False
 
-            # uの右回転を行う
-            if u.bias == 2:
+            # 要右回転: 2重回転後の
+            elif u.bias == 2:
                 if u.left.bias == -1:
                     child = self._rotateLR(u)
                 else:
                     child = self._rotateR(u)
 
-                if t == 1:
-                    active = False
-
-            # uの左回転
-            if u.bias == -2:
+            # 要回転
+            elif u.bias == -2:
                 if u.right.bias == 1:
                     child = self._rotateRL(u)
                 else:
                     child = self._rotateL(u)
-
-                if t == 1:
-                    active = False
 
         if child is not None:
             self.root = child
@@ -291,7 +302,7 @@ class AVLTree:
             now.right = Node(key, value)
 
         # 回転
-        self._rotate(path, 1)
+        self._balance(path, 1)
 
     def delete(self, key):
         """keyの削除
@@ -345,7 +356,7 @@ class AVLTree:
             par.right = child
 
         # 回転
-        self._rotate(path, -1)
+        self._balance(path, -1)
         return rm_value
 
     def member(self, key):
@@ -489,35 +500,3 @@ class AVLTree:
 
         dfs(self.root)
         return ""
-
-
-if __name__ == "__main__":
-    num = [21, 40, 64, 41, 61, 68, 64, 66, 30, 69, 95, 99, 84, 100, 97, 96, 73, 67, 55, 79]
-    avl = AVLTree()
-    for i in num:
-        avl.insert(i)
-    print(avl)
-
-    num = [21, 64, 69, 73, 97, 100, 79, 66, 55, 68, 95, 30, 99, 40, 67, 84, 61, 64, 96, 41]
-    num = [21, 64, 69]
-    for i in num:
-        print("===================")
-        print(avl)
-        if i == 61:
-            print(i, i in avl)
-            print(avl)
-        avl.delete(i)
-    print(avl)
-
-
-
-    # Q = int(input())
-    # avl = AVLTree()
-    # for _ in range(Q):
-    #     t, x = map(int, input().split())
-    #     if t == 1:
-    #         avl.insert(x)
-    #     else:
-    #         rm = avl.kth_element(x - 1)
-    #         print(rm)
-    #         avl.delete(rm)
