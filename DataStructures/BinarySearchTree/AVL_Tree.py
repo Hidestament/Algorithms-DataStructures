@@ -1,4 +1,4 @@
-###############################################################
+########################################################################################
 # AVL木: 以下の操作を全て O(log N) で行う
 # insert(key, value): key-value の挿入.
 # delete(key): key-value の削除
@@ -8,7 +8,12 @@
 # lower_bound(x): key x 以上のモノの中で最小のkeyを取得
 # upper_bound(x): key x 未満のモノの中で最大のkeyを取得
 # kth_elements(k): k番目の小さいkeyを返す（0-index）
-###############################################################
+########################################################################################
+
+########################################################################################
+# Verify
+# - ABC217 D - Cutting Woods: https://atcoder.jp/contests/abc217/submissions/30910492
+########################################################################################
 
 
 class Node:
@@ -187,15 +192,18 @@ class AVLTree:
         while path:
             u, direction = path.pop()
             u.size += t
-            if (active) and (direction is not None):
+            if active:
                 u.bias += t * direction
 
             # 回転などにより, 子に変更があったら繋ぎ変える
             if child is not None:
-                if direction == -1:
+                if direction == 1:
                     u.left = child
                 else:
                     u.right = child
+
+                if (child.bias != 0) and (t == -1):
+                    active = False
 
                 child = None
 
@@ -300,18 +308,18 @@ class AVLTree:
         if not path:
             return None
 
-        rm_node, _ = path.pop()
-        if rm_node.key != key:
+        rm_node, direction = path.pop()
+        if direction != 0:
             return None
 
         rm_value = rm_node.value
 
         # 削除ノードが左部分木を持つ場合, 左部分木の最大値ノードと交換してから削除
         if rm_node.left is not None:
-            path.append((rm_node, -1))
+            path.append((rm_node, 1))
             left_max = rm_node.left
             while left_max.right is not None:
-                path.append((left_max, 1))
+                path.append((left_max, -1))
                 left_max = left_max.right
 
             # 左部分木の最大ノードに付いたら, nowと交換
@@ -331,7 +339,7 @@ class AVLTree:
 
         # 削除 & 繋ぎ変え
         par, direction = path[-1]
-        if direction == -1:
+        if direction == 1:
             par.left = child
         else:
             par.right = child
@@ -484,13 +492,32 @@ class AVLTree:
 
 
 if __name__ == "__main__":
-    Q = int(input())
+    num = [21, 40, 64, 41, 61, 68, 64, 66, 30, 69, 95, 99, 84, 100, 97, 96, 73, 67, 55, 79]
     avl = AVLTree()
-    for _ in range(Q):
-        t, x = map(int, input().split())
-        if t == 1:
-            avl.insert(x)
-        else:
-            rm = avl.kth_element(x - 1)
-            print(rm)
-            avl.delete(rm)
+    for i in num:
+        avl.insert(i)
+    print(avl)
+
+    num = [21, 64, 69, 73, 97, 100, 79, 66, 55, 68, 95, 30, 99, 40, 67, 84, 61, 64, 96, 41]
+    num = [21, 64, 69]
+    for i in num:
+        print("===================")
+        print(avl)
+        if i == 61:
+            print(i, i in avl)
+            print(avl)
+        avl.delete(i)
+    print(avl)
+
+
+
+    # Q = int(input())
+    # avl = AVLTree()
+    # for _ in range(Q):
+    #     t, x = map(int, input().split())
+    #     if t == 1:
+    #         avl.insert(x)
+    #     else:
+    #         rm = avl.kth_element(x - 1)
+    #         print(rm)
+    #         avl.delete(rm)
