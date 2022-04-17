@@ -474,6 +474,19 @@ class AVLTree:
 
         return None
 
+    def min_element(self):
+        """最小値を返す. 無いならNone
+        """
+        return self.kth_element(0)
+
+    def max_element(self):
+        """最大値を返す. 無いならNone
+        """
+        if self.root is None:
+            return None
+        max_k = self.root.size - 1
+        return self.kth_element(max_k)
+
     def __contains__(self, key):
         return self.get(key)
 
@@ -512,3 +525,17 @@ class AVLTree:
 
         dfs(self.root)
         return ""
+
+
+if __name__ == "__main__":
+    import random
+    num = [random.randint(0, 10000) for _ in range(30)]
+    print(f"min = {min(num)}")
+    print(f"max = {max(num)}")
+
+    avl = AVLTree()
+    for i in num:
+        avl.insert(i)
+
+    print(f"min_avl = {avl.min_element()}")
+    print(f"max_avl = {avl.max_element()}")
