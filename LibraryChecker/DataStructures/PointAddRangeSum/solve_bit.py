@@ -1,3 +1,5 @@
+# https://judge.yosupo.jp/submission/158577
+
 from DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
 
 

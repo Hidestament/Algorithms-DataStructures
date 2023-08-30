@@ -1,3 +1,5 @@
+# https://judge.yosupo.jp/submission/158512
+
 import sys
 
 from DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
