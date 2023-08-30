@@ -5,13 +5,28 @@ from DataStructures.BitVector.bit_vector_accumulate import BitVectorAcc as BitVe
 
 
 class WaveletMatrix:
-    """
+    """数列に関するクエリを高速に処理する
+
     Notation:
         T: 元の配列.
         T[i]: 元の配列のi番目の要素.
         x: Tの要素.
         B[j]: j番目のBit Vector.
         bit_size: log2(Tの最大値)
+
+    Method:
+        - access(i): T[i]を返す. O(bit_size).
+        - rank(x, right): T[0..right)における, xの出現回数を返す. O(bit_size).
+        - rank_range(x, left, right): T[left..right)における, xの出現回数を返す. O(bit_size).
+        - select(x, k): Tのk個目のxの出現位置 (index) を返す. O(bit_size).
+        - quantile(left, right, k): T[left..right)の中のk番目に小さい値を返す. O(bit_size).
+        - kth_smallest(left, right, k): T[left..right)の中で, k番目に小さい要素を返す. O(bit_size).
+        - kth_largest(left, right, k): T[left..right)の中で, k番目に大きい要素を返す. O(bit_size).
+        - topk(left, right, k): T[left..right)の中で, 出現回数が多い順に(要素, 出現回数)をk個返す.
+        - sum(left, right): T[left..right)の和.
+        - range_freq(left, right, lower, upper): T[left..right)の中で, lower <= x < upper となるxの個数を計算する. O(bit_size).
+        - prev_value(left, right, upper): T[left..right)の中で, x < upperを満たす最大のxを返す. O(bit_size).
+        - next_value(left, right, lower): T[left..right)の中で, lower <= x を満たす最小のxを返す. O(bit_size).
     """
 
     def __init__(self, T: list[int]):
