@@ -5,6 +5,16 @@ from DataStructures.BitVector.bit_vector_base import BitVectorBase
 
 
 class BitVectorAcc(BitVectorBase):
+    """0-1の配列Bに対して, 累積和を使用したビットベクトル
+
+    Methods:
+        - rank0(i): B[0..i)の0の個数. O(1).
+        - rank1(i): B[0..i)の1の個数. O(1).
+        - rank0_all(): Bの0の個数. O(1).
+        - rank1_all(): Bの1の個数. O(1).
+        - select0(k): 0がk番目に現れるindex. O(logN)
+        - select1(k): 1がk番目に現れるindex. O(logN)
+    """
     def __init__(self, B: list[int]):
         """累積和を使用したビットベクトル
 
