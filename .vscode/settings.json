@@ -7,9 +7,11 @@
         "charliermarsh",
         "esbenp",
         "njpwerner",
+        "popleft",
         "pylance",
         "quantile",
-        "topk"
+        "topk",
+        "SSSP"
     ],
     "files.autoSave": "afterDelay",
     "python.analysis.autoFormatStrings": true,
