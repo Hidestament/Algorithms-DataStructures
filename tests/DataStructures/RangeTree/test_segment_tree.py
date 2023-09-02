@@ -14,10 +14,10 @@ def test_min_update():
     for i, a in enumerate(A):
         seg.update(i, a)
 
-    assert seg.tree == [float("inf"), 2, 2, 6, 3, 2, 6, 8, 3, 5, 2, 11, 9, 6, 20, 8]
+    assert seg.data == [float("inf"), 2, 2, 6, 3, 2, 6, 8, 3, 5, 2, 11, 9, 6, 20, 8]
 
     seg.update(5, 1)
-    assert seg.tree == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
+    assert seg.data == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
 
 
 def test_min_set_item():
@@ -31,10 +31,10 @@ def test_min_set_item():
     for i, a in enumerate(A):
         seg[i] = a
 
-    assert seg.tree == [float("inf"), 2, 2, 6, 3, 2, 6, 8, 3, 5, 2, 11, 9, 6, 20, 8]
+    assert seg.data == [float("inf"), 2, 2, 6, 3, 2, 6, 8, 3, 5, 2, 11, 9, 6, 20, 8]
 
     seg.update(5, 1)
-    assert seg.tree == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
+    assert seg.data == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
 
 
 def test_sum_update():
@@ -47,7 +47,7 @@ def test_sum_update():
     for i, a in enumerate(A):
         seg.update(i, a)
 
-    assert seg.tree == [0, 15, 10, 5, 3, 7, 5, 0, 1, 2, 3, 4, 5, 0, 0, 0]
+    assert seg.data == [0, 15, 10, 5, 3, 7, 5, 0, 1, 2, 3, 4, 5, 0, 0, 0]
 
 
 def test_min_add():
@@ -61,7 +61,7 @@ def test_min_add():
         seg.update(i, a)
 
     seg.add(5, -5)
-    assert seg.tree == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
+    assert seg.data == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
 
 
 def test_min_get():
