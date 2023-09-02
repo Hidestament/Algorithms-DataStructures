@@ -15,6 +15,7 @@ class BitVectorAcc(BitVectorBase):
         - select0(k): 0がk番目に現れるindex. O(logN)
         - select1(k): 1がk番目に現れるindex. O(logN)
     """
+
     def __init__(self, B: list[int]):
         """累積和を使用したビットベクトル
 

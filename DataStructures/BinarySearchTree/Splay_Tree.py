@@ -381,13 +381,11 @@ class SplayTree:
         return self.root.key
 
     def min_element(self):
-        """最小値を返す. 無いならNone
-        """
+        """最小値を返す. 無いならNone"""
         return self.kth_element(0)
 
     def max_element(self):
-        """最大値を返す. 無いならNone
-        """
+        """最大値を返す. 無いならNone"""
         if self.root is None:
             return None
         max_k = self.root.size - 1
@@ -415,7 +413,6 @@ class SplayTree:
         return self.delete(key)
 
     def __repr__(self):
-
         def dfs(now):
             if now is None:
                 return ""
@@ -434,12 +431,13 @@ class SplayTree:
 
 if __name__ == "__main__":
     import sys
+
     Q, *A = map(int, sys.stdin.buffer.read().split())
     splay = SplayTree()
-    for t, x in zip(*[iter(A)]*2):
+    for t, x in zip(*[iter(A)] * 2):
         if t == 1:
             splay[x] = 1
         else:
-            x = splay.kth_element(x-1)
+            x = splay.kth_element(x - 1)
             del splay[x]
             print(x)

@@ -54,7 +54,7 @@ class WeightedUnionFindTree:
             return False
 
         # サイズが 小さい方 を 大きい方 へつなげる
-        if (self.parents[x] > self.parents[y]):
+        if self.parents[x] > self.parents[y]:
             x, y = y, x
             w *= -1
 

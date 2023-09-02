@@ -11,7 +11,7 @@ def test_tree_no_weight():
         [(2, 1)],
         [(2, 1), (7, 1)],
         [(6, 1)],
-        [(2, 1)]
+        [(2, 1)],
     ]
     dist, prev = dijkstra(graph, 0)
 
@@ -46,7 +46,7 @@ def test_tree_with_weight():
         [(2, 3)],
         [(2, 1), (7, 4)],
         [(6, 4)],
-        [(2, 2)]
+        [(2, 2)],
     ]
     dist, prev = dijkstra(graph, 0)
 
@@ -77,7 +77,7 @@ def test_connected_graph_with_cycle():
         [(0, 7), (2, 1), (4, 2)],
         [(0, 4), (1, 1), (4, 6)],
         [(0, 3), (4, 5)],
-        [(1, 2), (2, 6), (3, 5)]
+        [(1, 2), (2, 6), (3, 5)],
     ]
 
     dist, prev = dijkstra(graph, 0)
@@ -96,13 +96,7 @@ def test_connected_graph_with_cycle():
 
 
 def test_no_connected_graph():
-    graph = [
-        [(1, 3), (2, 9)],
-        [(0, 3)],
-        [(0, 2)],
-        [(4, 2)],
-        [(3, 2)]
-    ]
+    graph = [[(1, 3), (2, 9)], [(0, 3)], [(0, 2)], [(4, 2)], [(3, 2)]]
 
     dist, prev = dijkstra(graph, 0)
 

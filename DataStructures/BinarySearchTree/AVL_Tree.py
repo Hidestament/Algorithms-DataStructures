@@ -154,7 +154,7 @@ class AVLTree:
         # sizeの修正
         w.size = u.size
         u.size -= (v.size) - (w.right.size if w.right is not None else 0)
-        v.size -= (w.right.size + 1 if w.right is not None else 1)
+        v.size -= w.right.size + 1 if w.right is not None else 1
 
         # vに対して左回転
         v.right = w.left
@@ -183,7 +183,7 @@ class AVLTree:
         # sizeの修正
         w.size = u.size
         u.size -= (v.size) - (w.left.size if w.left is not None else 0)
-        v.size -= (w.left.size + 1 if w.left is not None else 1)
+        v.size -= w.left.size + 1 if w.left is not None else 1
 
         # vに対して右回転
         v.left = w.right
@@ -477,13 +477,11 @@ class AVLTree:
         return None
 
     def min_element(self):
-        """最小値を返す. 無いならNone
-        """
+        """最小値を返す. 無いならNone"""
         return self.kth_element(0)
 
     def max_element(self):
-        """最大値を返す. 無いならNone
-        """
+        """最大値を返す. 無いならNone"""
         if self.root is None:
             return None
         max_k = self.root.size - 1
@@ -511,7 +509,6 @@ class AVLTree:
         return self.delete(key)
 
     def __repr__(self):
-
         def dfs(now):
             if now is None:
                 return ""
@@ -531,6 +528,7 @@ class AVLTree:
 
 if __name__ == "__main__":
     import random
+
     num = [random.randint(0, 10000) for _ in range(30)]
     print(f"min = {min(num)}")
     print(f"max = {max(num)}")

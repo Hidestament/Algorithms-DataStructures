@@ -106,9 +106,7 @@ class SegmentTree(Generic[S]):
         while i > 1:
             # i //= 2 -> 親頂点
             i >>= 1
-            self.tree[i] = self.segfunc(
-                self.tree[i << 1], self.tree[(i << 1) + 1]
-            )
+            self.tree[i] = self.segfunc(self.tree[i << 1], self.tree[(i << 1) + 1])
 
     def update(self, i: int, x: S):
         """A[i] = x とする
@@ -129,9 +127,7 @@ class SegmentTree(Generic[S]):
         while i > 1:
             # i //= 2 -> 親頂点
             i >>= 1
-            self.tree[i] = self.segfunc(
-                self.tree[i << 1], self.tree[(i << 1) + 1]
-            )
+            self.tree[i] = self.segfunc(self.tree[i << 1], self.tree[(i << 1) + 1])
 
     def _query_recursion(
         self,
@@ -165,8 +161,12 @@ class SegmentTree(Generic[S]):
         # クエリ区間[left, right) ⊂ ノード区間[node_left, node_right)
         # 左と右に分割
         else:
-            left_value = self._query_recursion(left, right, node << 1, node_left, (node_left + node_right) >> 1)
-            right_value = self._query_recursion(left, right, (node << 1) + 1, (node_left + node_right) >> 1, node_right)
+            left_value = self._query_recursion(
+                left, right, node << 1, node_left, (node_left + node_right) >> 1
+            )
+            right_value = self._query_recursion(
+                left, right, (node << 1) + 1, (node_left + node_right) >> 1, node_right
+            )
             return self.segfunc(left_value, right_value)
 
     def query_recursion(self, left: int, right: int) -> S:

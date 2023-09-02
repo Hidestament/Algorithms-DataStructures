@@ -1,5 +1,7 @@
 from Algorithms.Graph.ShortestPath.dijkstra import dijkstra
-from Algorithms.Graph.ShortestPath.reconstruct_shortest_path import reconstruct_shortest_path
+from Algorithms.Graph.ShortestPath.reconstruct_shortest_path import (
+    reconstruct_shortest_path,
+)
 
 
 def test_tree_no_weight():
@@ -12,7 +14,7 @@ def test_tree_no_weight():
         [(2, 1)],
         [(2, 1), (7, 1)],
         [(6, 1)],
-        [(2, 1)]
+        [(2, 1)],
     ]
     _, prev = dijkstra(graph, 0)
     shortest_path = reconstruct_shortest_path(prev, 0, 1)
@@ -46,7 +48,7 @@ def test_connected_graph_with_cycle():
         [(0, 7), (2, 1), (4, 2)],
         [(0, 4), (1, 1), (4, 6)],
         [(0, 3), (4, 5)],
-        [(1, 2), (2, 6), (3, 5)]
+        [(1, 2), (2, 6), (3, 5)],
     ]
 
     _, prev = dijkstra(graph, 0)

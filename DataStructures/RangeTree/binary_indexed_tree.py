@@ -12,6 +12,7 @@ class BinaryIndexedTree:
         - sum_range(i, j): A[i..j)の総和
         - lower_bound(x): A[0] + A[1] + ... A[i - 1] >= x となる最小のiを取得
     """
+
     def __init__(self, N: int = 10**6):
         """Binary Indexed Tree. 0で初期化する. 0-indexedだが, 内部では1-indexedで扱う.
 

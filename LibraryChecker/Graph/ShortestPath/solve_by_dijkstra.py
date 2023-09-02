@@ -3,7 +3,9 @@
 import sys
 
 from Algorithms.Graph.ShortestPath.dijkstra import dijkstra
-from Algorithms.Graph.ShortestPath.reconstruct_shortest_path import reconstruct_shortest_path
+from Algorithms.Graph.ShortestPath.reconstruct_shortest_path import (
+    reconstruct_shortest_path,
+)
 
 
 input = sys.stdin.readline
