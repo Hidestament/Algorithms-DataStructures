@@ -10,8 +10,9 @@
         "popleft",
         "pylance",
         "quantile",
-        "topk",
-        "SSSP"
+        "segfunc",
+        "SSSP",
+        "topk"
     ],
     "files.autoSave": "afterDelay",
     "python.analysis.autoFormatStrings": true,
