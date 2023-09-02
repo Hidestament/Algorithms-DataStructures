@@ -9,12 +9,12 @@ class BinaryIndexedTree:
         data (list): データを格納するBinary Indexed Tree. 1-indexedで扱う.
 
     Methods:
-        get(i): A[i]
-        add(i, x): A[i] += x
-        update(i, x): A[i] = x
-        sum(i): sum(A[0..i))
-        sum_range(i, j): sum(A[i..j))
-        lower_bound(x): A[0] + A[1] + ... A[i - 1] >= x となる最小のi
+        get(i): A[i], O(logN)
+        add(i, x): A[i] += x, O(logN)
+        update(i, x): A[i] = x, O(logN)
+        sum(i): sum(A[0..i)), O(logN)
+        sum_range(i, j): sum(A[i..j)), O(logN)
+        lower_bound(x): A[0] + A[1] + ... A[i - 1] >= x となる最小のi, O(logN)
 
     Notes:
         - 0-indexedで扱う (内部では1-indexedで扱う)
