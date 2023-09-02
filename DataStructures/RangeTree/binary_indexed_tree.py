@@ -4,17 +4,24 @@ from typing import Optional
 class BinaryIndexedTree:
     """部分和 + 一点更新を O(log N)で行う
 
-    Method:
-        - get(i): A[i]を取得
-        - add(i, x): A[i] += x
-        - update(i, x): A[i] = xに更新する
-        - sum(i): A[0..i)の総和
-        - sum_range(i, j): A[i..j)の総和
-        - lower_bound(x): A[0] + A[1] + ... A[i - 1] >= x となる最小のiを取得
+    Attributes:
+        size (int): 配列の要素数
+        data (list): データを格納するBinary Indexed Tree. 1-indexedで扱う.
+
+    Methods:
+        get(i): A[i]
+        add(i, x): A[i] += x
+        update(i, x): A[i] = x
+        sum(i): sum(A[0..i))
+        sum_range(i, j): sum(A[i..j))
+        lower_bound(x): A[0] + A[1] + ... A[i - 1] >= x となる最小のi
+
+    Notes:
+        - 0-indexedで扱う (内部では1-indexedで扱う)
     """
 
     def __init__(self, N: int = 10**6):
-        """Binary Indexed Tree. 0で初期化する. 0-indexedだが, 内部では1-indexedで扱う.
+        """Binary Indexed Tree
 
         Args:
             N (int): 配列の要素数. Defaults to 10**6.
@@ -92,7 +99,7 @@ class BinaryIndexedTree:
         """A[0..i)の総和
 
         Args:
-            i (int): index. 0-indexed. 含まない.
+            i (int): index. 0-indexed.
 
         Returns:
             int: sum(A[:i])
@@ -115,8 +122,8 @@ class BinaryIndexedTree:
         """A[i..j)の総和
 
         Args:
-            i (int): index. 0-indexed. 含む.
-            j (int): index. 0-indexed. 含まない
+            i (int): index. 0-indexed.
+            j (int): index. 0-indexed.
 
         Returns:
             int: sum(A[i:j])

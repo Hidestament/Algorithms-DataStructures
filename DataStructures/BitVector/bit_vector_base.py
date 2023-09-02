@@ -29,7 +29,7 @@ class BitVectorBase(metaclass=ABCMeta):
         """元の配列B[0..i)の0の個数
 
         Args:
-            i (int): 上限 (含まない).
+            i (int): 上限
 
         Returns:
             int: 0の個数
@@ -44,7 +44,7 @@ class BitVectorBase(metaclass=ABCMeta):
         """元の配列B[0..i)の1の個数
 
         Args:
-            i (int): 上限 (含まない).
+            i (int): 上限
 
         Returns:
             int: 1の個数

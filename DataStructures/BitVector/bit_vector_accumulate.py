@@ -7,6 +7,10 @@ from DataStructures.BitVector.bit_vector_base import BitVectorBase
 class BitVectorAcc(BitVectorBase):
     """0-1の配列Bに対して, 累積和を使用したビットベクトル
 
+    Attributes:
+        B (list[int]): 要素は0 or 1
+        acc (list[int]): Bの累積和
+
     Methods:
         - rank0(i): B[0..i)の0の個数. O(1).
         - rank1(i): B[0..i)の1の個数. O(1).
@@ -48,7 +52,7 @@ class BitVectorAcc(BitVectorBase):
         """元の配列B[0..i)の0の個数
 
         Args:
-            i (int): 上限 (含まない).
+            i (int): 上限
 
         Returns:
             int: 0の個数
@@ -65,7 +69,7 @@ class BitVectorAcc(BitVectorBase):
         """元の配列B[0..i)の1の個数
 
         Args:
-            i (int): 上限 (含まない).
+            i (int): 上限
 
         Returns:
             int: 1の個数

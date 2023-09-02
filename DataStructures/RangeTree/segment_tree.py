@@ -14,7 +14,7 @@ class SegmentTree(Generic[S]):
         segfunc (Callable[[S, S], S]): モノイド上の2項演算.
         ide_ele (S): モノイド上の単位元.
 
-    Method:
+    Methods:
         get(i): A[i]を取得, O(1).
         add(i, x): A[i] += x, O(logN).
         update(i, x): A[i] = x, O(logN).
@@ -161,7 +161,11 @@ class SegmentTree(Generic[S]):
                 left, right, node_k << 1, node_left, (node_left + node_right) >> 1
             )
             right_value = self._query_recursion(
-                left, right, (node_k << 1) + 1, (node_left + node_right) >> 1, node_right
+                left,
+                right,
+                (node_k << 1) + 1,
+                (node_left + node_right) >> 1,
+                node_right,
             )
             return self.segfunc(left_value, right_value)
 

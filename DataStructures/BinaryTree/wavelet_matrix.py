@@ -14,19 +14,23 @@ class WaveletMatrix:
         B[j]: j番目のBit Vector.
         bit_size: log2(Tの最大値)
 
-    Method:
-        - access(i): T[i]を返す. O(bit_size).
-        - rank(x, right): T[0..right)における, xの出現回数を返す. O(bit_size).
-        - rank_range(x, left, right): T[left..right)における, xの出現回数を返す. O(bit_size).
-        - select(x, k): Tのk個目のxの出現位置 (index) を返す. O(bit_size).
-        - quantile(left, right, k): T[left..right)の中のk番目に小さい値を返す. O(bit_size).
-        - kth_smallest(left, right, k): T[left..right)の中で, k番目に小さい要素を返す. O(bit_size).
-        - kth_largest(left, right, k): T[left..right)の中で, k番目に大きい要素を返す. O(bit_size).
-        - topk(left, right, k): T[left..right)の中で, 出現回数が多い順に(要素, 出現回数)をk個返す.
-        - sum(left, right): T[left..right)の和.
-        - range_freq(left, right, lower, upper): T[left..right)の中で, lower <= x < upper となるxの個数を計算する. O(bit_size).
-        - prev_value(left, right, upper): T[left..right)の中で, x < upperを満たす最大のxを返す. O(bit_size).
-        - next_value(left, right, lower): T[left..right)の中で, lower <= x を満たす最小のxを返す. O(bit_size).
+    Attributes:
+        bit_size (int): WaveletMatrixの列数 (深さ).
+        wavelet_matrix (list[BitVector]): WaveletMatrix.
+
+    Methods:
+        access(i): T[i], O(bit_size).
+        rank(x, right): T[0..right)におけるxの出現回数, O(bit_size).
+        rank_range(x, left, right): T[left..right)におけるxの出現回数, O(bit_size).
+        select(x, k): Tのk個目のxの出現位置, O(bit_size).
+        quantile(left, right, k): T[left..right)の中のk番目に小さい値, O(bit_size).
+        kth_smallest(left, right, k): T[left..right)の中でk番目に小さい要素, O(bit_size).
+        kth_largest(left, right, k): T[left..right)の中でk番目に大きい要素, O(bit_size).
+        topk(left, right, k): T[left..right)の中で出現回数が多い順に(要素, 出現回数)をk個.
+        sum(left, right): T[left..right)の和.
+        range_freq(left, right, lower, upper): T[left..right)の中で, lower <= x < upper となるxの個数, O(bit_size).
+        prev_value(left, right, upper): T[left..right)の中で x < upperを満たす最大のx, O(bit_size).
+        next_value(left, right, lower): T[left..right)の中で lower <= x を満たす最小のx, O(bit_size).
     """
 
     def __init__(self, T: list[int]):
@@ -107,8 +111,8 @@ class WaveletMatrix:
         Args:
             B (BitVector): Bit Vector B[j].
             bit (int): 範囲に含まれるbit. 0 or 1.
-            left (int): Bの範囲の下限 (含む).
-            right (int): Bの範囲の上限 (含まない).
+            left (int): Bの範囲の下限.
+            right (int): Bの範囲の上限.
 
         Returns:
             (int, int): B[j+1]の[left..right)
@@ -152,7 +156,7 @@ class WaveletMatrix:
 
         Args:
             x (int): 対象の要素
-            right (int): Tの範囲の上限 (含まない).
+            right (int): Tの範囲の上限
 
         Returns:
             int: 出現回数
@@ -163,12 +167,12 @@ class WaveletMatrix:
         return self.rank_range(x, 0, right)
 
     def rank_range(self, x: int, left: int, right: int) -> int:
-        """T[left..right)における, xの出現回数を返す
+        """T[left..right)におけるxの出現回数を返す
 
         Args:
             x (int): 対象の要素
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
 
         Returns:
             int: 出現回数
@@ -230,9 +234,9 @@ class WaveletMatrix:
         """元の配列T[left..right)の中のk番目に小さい値を返す
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            k (int): 何番目の要素か. 1-index.
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            k (int): 何番目の要素か, 1-index
 
         Returns:
             Optional[int]: k番目に小さい値. 該当要素が存在しない場合はNone.
@@ -263,9 +267,9 @@ class WaveletMatrix:
         """T[left..right)の中で, k番目に小さい要素を返す.
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            k (int): 何番目の要素か. 1-index.
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            k (int): 何番目の要素か, 1-index
 
         Returns:
             Optional[int]: k番目に小さい値. 該当要素が存在しない場合はNone.
@@ -279,9 +283,9 @@ class WaveletMatrix:
         """T[left..right)の中で, k番目に大きい要素を返す.
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            k (int): 何番目の要素か. 1-index.
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            k (int): 何番目の要素か, 1-index
 
         Returns:
             Optional[int]: k番目に大きい要素. 存在しない場合None.
@@ -295,9 +299,9 @@ class WaveletMatrix:
         """T[left..right)の中で, 出現回数が多い順に(要素, 出現回数)をk個返す.
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            k (int): いくつ返すか. 1-index.
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            k (int): いくつ返すか, 1-index
 
         Returns:
             list[tuple[int, int]]: [(出現回数が1番多い要素, その出現回数), ...]
@@ -346,8 +350,8 @@ class WaveletMatrix:
         """T[left..right)の和
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
 
         Returns:
             int: ΣT[left..right)
@@ -366,9 +370,9 @@ class WaveletMatrix:
         """T[left..right)の0 <= x < upper となるxの個数を計算する
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            upper (int): 要素の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            upper (int): 要素の上限
 
         Returns:
             int: 0 <= x < upperとなる要素の数
@@ -399,9 +403,9 @@ class WaveletMatrix:
         """T[left..right)のlower <= x となるxの個数を計算する
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            lower (int): 要素の下限 (含む).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            lower (int): 要素の下限
 
         Returns:
             int: lower <= x となる要素の数
@@ -420,10 +424,10 @@ class WaveletMatrix:
         """T[left..right)のlower <= x < upper となるxの個数を計算する
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            lower (int): 要素の下限 (含む).
-            upper (int): 要素の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            lower (int): 要素の下限
+            upper (int): 要素の上限
 
         Returns:
             int: lower <= x < upperとなる要素の数
@@ -442,10 +446,10 @@ class WaveletMatrix:
         """T[left..right)の中で, lower <= x < upperを満たすxを頻度とともに返す
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            lower (int): 要素の下限 (含む).
-            upper (int): 要素の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            lower (int): 要素の下限
+            upper (int): 要素の上限
 
         Returns:
             TODO: ????
@@ -459,9 +463,9 @@ class WaveletMatrix:
         """T[left..right)の中で, 0 <= x < upperを満たす最大のxを返す
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            upper (int): 要素の上限 (含まない).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            upper (int): 要素の上限
 
         Returns:
             Optional[int]: 0 <= x < upperを満たす最大のx. 存在しない場合None.
@@ -479,9 +483,9 @@ class WaveletMatrix:
         """T[left..right)の中で, lower <= x を満たす最小のxを返す
 
         Args:
-            left (int): Tの範囲の下限 (含む).
-            right (int): Tの範囲の上限 (含まない).
-            lower (int): 要素の下限 (含む).
+            left (int): Tの範囲の下限
+            right (int): Tの範囲の上限
+            lower (int): 要素の下限
 
         Returns:
             int: lower <= x を満たす最小のx
