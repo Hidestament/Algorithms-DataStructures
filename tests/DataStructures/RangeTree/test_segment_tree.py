@@ -119,3 +119,33 @@ def test_min_query():
 
     for left, right in combinations(range(len(A)), 2):
         assert seg.query(left, right) == min(A[left:right])
+
+
+def test_function_library_checker():
+    MOD = 998244353
+    A = [[1, 2], [3, 4], [5, 6], [7, 8], [9, 10]]
+    seg = SegmentTree(
+        N=len(A),
+        segfunc=lambda x, y: [(y[0] * x[0]) % MOD, (y[0] * x[1] + y[1]) % MOD],
+        ide_ele=[1, 0],
+    )
+    for i, a in enumerate(A):
+        seg[i] = a
+
+    f = seg.query(0, 5)
+    x = 11
+    assert (f[0] * x + f[1]) % MOD == 14005
+
+    f = seg.query(2, 4)
+    x = 12
+    assert (f[0] * x + f[1]) % MOD == 470
+
+    seg.update(1, [13, 14])
+
+    f = seg.query(0, 4)
+    x = 15
+    assert (f[0] * x + f[1]) % MOD == 8275
+
+    f = seg.query(2, 5)
+    x = 16
+    assert (f[0] * x + f[1]) % MOD == 5500
