@@ -1,14 +1,25 @@
-from typing import Callable
+from typing import Callable, Generic, TypeVar
 
 
-class SegmentTree:
+S = TypeVar("S")
+
+
+class SegmentTree(Generic[S]):
     """1点更新・区間集約Segment Tree. 非再起, 0-index, 非可換.
 
+    Attributes:
+        _N (int): 元の配列のサイズ
+        # N以上の最小の2のべき乗
+        N (int): セグメント木の葉の数. 2のべき乗.
+        tree (list[S]): セグメント木. 1-indexed.
+        segfunc (Callable[[S, S], S]): モノイド上の2項演算.
+        ide_ele (S): モノイド上の単位元.
+
     Method:
-        - get(i): A[i]を取得 O(1).
-        - add(i, x): A[i] += x O(logN).
-        - update(i, x): A[i] = x O(logN).
-        - query(left, right): segfunc(A[left..right)) O(logN).
+        get(i): A[i]を取得 O(1).
+        add(i, x): A[i] += x O(logN).
+        update(i, x): A[i] = x O(logN).
+        query(left, right): segfunc(A[left..right)) O(logN).
 
     Notes:
         i番目のノードの
@@ -17,13 +28,13 @@ class SegmentTree:
         - 親: i // 2 = i >> 1
     """
 
-    def __init__(self, N: int, segfunc: Callable, ide_ele: int):
+    def __init__(self, N: int, segfunc: Callable[[S, S], S], ide_ele: S):
         """1点更新・区間集約Segment Tree
 
         Args:
             N (int): 元の配列のサイズ
-            segfunc (Callable): モノイド上の2項演算.
-            ide_ele (int): モノイド上の単位元.
+            segfunc (Callable[[S, S], S]): モノイド上の2項演算.
+            ide_ele (S): モノイド上の単位元.
 
         Notes:
             - 0-indexed (内部では1-indexed)
@@ -39,7 +50,7 @@ class SegmentTree:
         self.segfunc = segfunc
         self.ide_ele = ide_ele
 
-    def __getitem__(self, i: int) -> int:
+    def __getitem__(self, i: int) -> S:
         """元の配列A[i]の値を取得する
 
         Args:
@@ -50,7 +61,22 @@ class SegmentTree:
         """
         return self.get(i)
 
-    def get(self, i: int) -> int:
+    def __setitem__(self, i: int, x: S):
+        """A[i] = x とする
+
+        Args:
+            i (int): index. 0-indexed.
+            x (S): update value.
+
+        TimeComplexity:
+            O(logN)
+
+        Note:
+            ide_ele=float("inf")の場合, self.add()を使用すると挙動がおかしくなるため, こちらを使用する.
+        """
+        self.update(i, x)
+
+    def get(self, i: int) -> S:
         """元の配列A[i]の値を取得する
 
         Args:
@@ -64,12 +90,12 @@ class SegmentTree:
 
         return self.tree[i + self.N]
 
-    def add(self, i: int, x: int):
+    def add(self, i: int, x: S):
         """A[i] += xとする
 
         Args:
             i (int): index. 0-indexed.
-            x (int): update value.
+            x (S): update value.
 
         TimeComplexity:
             O(logN)
@@ -84,12 +110,12 @@ class SegmentTree:
                 self.tree[i << 1], self.tree[(i << 1) + 1]
             )
 
-    def update(self, i: int, x: int):
+    def update(self, i: int, x: S):
         """A[i] = x とする
 
         Args:
             i (int): index. 0-indexed.
-            x (int): update value.
+            x (S): update value.
 
         TimeComplexity:
             O(logN)
@@ -114,7 +140,7 @@ class SegmentTree:
         node: int,
         node_left: int,
         node_right: int,
-    ) -> int:
+    ) -> S:
         """クエリ区間[left, right)に対する再帰関数
 
         Args:
@@ -125,7 +151,7 @@ class SegmentTree:
             node_right (int): 現在見ているノードの右端index. 0-indexed.
 
         Returns:
-            int: segfunc(A[left..right))
+            S: segfunc(A[left..right))
         """
         # 範囲外なら単位元を返す
         if (right <= node_left) or (node_right <= left):
@@ -143,7 +169,7 @@ class SegmentTree:
             right_value = self._query_recursion(left, right, (node << 1) + 1, (node_left + node_right) >> 1, node_right)
             return self.segfunc(left_value, right_value)
 
-    def query_recursion(self, left: int, right: int) -> int:
+    def query_recursion(self, left: int, right: int) -> S:
         """再起segfunc(A[left..right))を求める. A[right]は含まない
 
         Args:
@@ -151,14 +177,14 @@ class SegmentTree:
             right (int): 上限index. 0-indexed. A[right]は含まない.
 
         Returns:
-            int: segfunc(A[left..right))
+            S: segfunc(A[left..right))
 
         TimeComplexity:
             O(logN)
         """
         return self._query_recursion(left, right, 1, 0, self.N)
 
-    def query(self, left: int, right: int) -> int:
+    def query(self, left: int, right: int) -> S:
         """非再起segfunc(A[left..right))を求める. A[right]は含まない
 
         Args:
@@ -166,7 +192,7 @@ class SegmentTree:
             right (int): 上限index. 0-indexed. A[right]は含まない.
 
         Returns:
-            int: segfunc(A[left..right))
+            S: segfunc(A[left..right))
 
         TimeComplexity:
             O(logN)

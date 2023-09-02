@@ -20,6 +20,36 @@ def test_min_update():
     assert seg.tree == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
 
 
+def test_min_set_item():
+    A = [3, 5, 2, 11, 9, 6, 20, 8]
+    seg = SegmentTree(
+        N=len(A),
+        segfunc=min,
+        ide_ele=float("inf"),
+    )
+
+    for i, a in enumerate(A):
+        seg[i] = a
+
+    assert seg.tree == [float("inf"), 2, 2, 6, 3, 2, 6, 8, 3, 5, 2, 11, 9, 6, 20, 8]
+
+    seg.update(5, 1)
+    assert seg.tree == [float("inf"), 1, 2, 1, 3, 2, 1, 8, 3, 5, 2, 11, 9, 1, 20, 8]
+
+
+def test_sum_update():
+    A = [1, 2, 3, 4, 5]
+    seg = SegmentTree(
+        N=len(A),
+        segfunc=lambda x, y: x + y,
+        ide_ele=0,
+    )
+    for i, a in enumerate(A):
+        seg.update(i, a)
+
+    assert seg.tree == [0, 15, 10, 5, 3, 7, 5, 0, 1, 2, 3, 4, 5, 0, 0, 0]
+
+
 def test_min_add():
     A = [3, 5, 2, 11, 9, 6, 20, 8]
     seg = SegmentTree(
