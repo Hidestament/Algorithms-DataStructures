@@ -1,57 +1,72 @@
 from typing import Callable, Generic, TypeVar
+from itertools import chain
 
 
-S = TypeVar("S")
+T = TypeVar("T")
 
 
-class SegmentTree(Generic[S]):
+class SegmentTree(Generic[T]):
     """1点更新・区間集約Segment Tree.
 
     Attributes:
         _N (int): 元の配列のサイズ
         N (int): セグメント木の葉の数. N以上の最小の2のべき乗.
-        data (list[S]): 元の配列の集約値を保存する木. 1-indexed.
-        segfunc (Callable[[S, S], S]): モノイド上の2項演算.
-        ide_ele (S): モノイド上の単位元.
+        data (list[T]): 元の配列の集約値を保存する木. 1-indexed.
+        segfunc (Callable[[T, T], T]): モノイド上の2項演算.
+        ide_ele (T): モノイド上の単位元.
 
     Methods:
-        get(i): A[i]を取得, O(1).
-        add(i, x): A[i] += x, O(logN).
-        update(i, x): A[i] = x, O(logN).
-        query(left, right): 非再帰segfunc(A[left..right)), O(logN).
-        query_recursion(left, right): 再帰segfunc(A[left..right)), O(logN).
+        get(i: int): A[i], O(1).
+        add(i: int, x: T): A[i] += x, O(logN).
+        update(i: int, x: T): A[i] = x, O(logN).
+        query(left: int, right: int): 非再帰segfunc(A[left..right)), O(logN).
+        query_recursion(left: int, right: int): 再帰segfunc(A[left..right)), O(logN).
 
     Notes:
-        - 非再帰
-        - 全て半開区間[left..right)
-        - 0-indexed (内部では1-indexed)
-        - 非可換
-
-        i番目のノードの
-        - 左の子: i * 2 = i << 1
-        - 右の子: i * 2 + 1 = (i << 1) + 1
-        - 親: i // 2 = i >> 1
+        Bit演算
+        iの左の子 -> i << 1
+        iの右の子 -> (i << 1) + 1
+        iの親 -> i >> 1
     """
 
-    def __init__(self, N: int, segfunc: Callable[[S, S], S], ide_ele: S):
+    def __init__(self, A: list[T], segfunc: Callable[[T, T], T], ide_ele: T):
         """1点更新・区間集約Segment Tree
 
         Args:
-            N (int): 元の配列のサイズ
-            segfunc (Callable[[S, S], S]): モノイド上の2項演算.
-            ide_ele (S): モノイド上の単位元.
+            A (list[T]): 元の配列
+            segfunc (Callable[[T, T], T]): Segment Treeに乗せる演算
+            ide_ele (T): segfuncに対する単位元
 
         TimeComplexity:
-            O(N)
+            O(N logN)
         """
-        self._N = N
+        self._N = len(A)
         # N以上の最小の2のべき乗
-        self.N = 1 << (N - 1).bit_length()
-        self.data = [ide_ele] * (2 * self.N)
+        self.N = 1 << (self._N - 1).bit_length()
         self.segfunc = segfunc
         self.ide_ele = ide_ele
 
-    def __getitem__(self, i: int) -> S:
+        # 配列の値
+        self.data = self._build(A + [self.ide_ele] * (self.N - self._N))
+
+    def _build(self, A: list[T]) -> list[T]:
+        """元の配列からセグメント木を構築する
+
+        Args:
+            A (list[T]): 元の配列を2^kの長さに拡張した配列
+
+        Returns:
+            list[T]: Segment Tree
+        """
+        data = [A]
+        for _ in range(self.N.bit_length() - 1):
+            _A = data[-1]
+            data.append([self.segfunc(_A[i], _A[i + 1]) for i in range(0, len(_A), 2)])
+
+        data.append([self.ide_ele])
+        return list(chain.from_iterable(data[::-1]))
+
+    def __getitem__(self, i: int) -> T:
         """元の配列A[i]の値を取得する
 
         Args:
@@ -62,20 +77,20 @@ class SegmentTree(Generic[S]):
         """
         return self.get(i)
 
-    def __setitem__(self, i: int, x: S):
-        """A[i] = x とする
+    def __setitem__(self, i: int, x: T):
+        """A[i] = x
 
         Args:
             i (int): index. 0-indexed.
-            x (S): update value.
+            x (T): update value.
 
         TimeComplexity:
             O(logN)
         """
         self.update(i, x)
 
-    def get(self, i: int) -> S:
-        """元の配列A[i]の値を取得する
+    def get(self, i: int) -> T:
+        """元の配列A[i]の値
 
         Args:
             i (int): index. 0-indexed.
@@ -88,12 +103,12 @@ class SegmentTree(Generic[S]):
 
         return self.data[i + self.N]
 
-    def add(self, i: int, x: S):
-        """A[i] += xとする
+    def add(self, i: int, x: T):
+        """A[i] += x
 
         Args:
             i (int): index. 0-indexed.
-            x (S): add value.
+            x (T): add value.
 
         TimeComplexity:
             O(logN)
@@ -106,12 +121,12 @@ class SegmentTree(Generic[S]):
             i >>= 1
             self.data[i] = self.segfunc(self.data[i << 1], self.data[(i << 1) + 1])
 
-    def update(self, i: int, x: S):
-        """A[i] = x とする
+    def update(self, i: int, x: T):
+        """A[i] = x
 
         Args:
             i (int): index. 0-indexed.
-            x (S): update value.
+            x (T): update value.
 
         TimeComplexity:
             O(logN)
@@ -134,7 +149,7 @@ class SegmentTree(Generic[S]):
         node_k: int,
         node_left: int,
         node_right: int,
-    ) -> S:
+    ) -> T:
         """A[left..right)を表すノードまで探索する
 
         Args:
@@ -145,7 +160,7 @@ class SegmentTree(Generic[S]):
             node_right (int): 現在見ているノードの右端index. 0-indexed.
 
         Returns:
-            S: segfunc(A[left..right))
+            T: segfunc(A[left..right))
         """
         # 範囲外なら単位元を返す
         if (right <= node_left) or (node_right <= left):
@@ -169,30 +184,30 @@ class SegmentTree(Generic[S]):
             )
             return self.segfunc(left_value, right_value)
 
-    def query_recursion(self, left: int, right: int) -> S:
-        """再起segfunc(A[left..right))を求める.
+    def query_recursion(self, left: int, right: int) -> T:
+        """再起segfunc(A[left..right))
 
         Args:
             left (int): 下限index. 0-indexed.
             right (int): 上限index. 0-indexed.
 
         Returns:
-            S: segfunc(A[left..right))
+            T: segfunc(A[left..right))
 
         TimeComplexity:
             O(logN)
         """
         return self._query_recursion(left, right, 1, 0, self.N)
 
-    def query(self, left: int, right: int) -> S:
-        """非再起segfunc(A[left..right))を求める.
+    def query(self, left: int, right: int) -> T:
+        """非再起segfunc(A[left..right))
 
         Args:
             left (int): 下限index. 0-indexed.
             right (int): 上限index. 0-indexed.
 
         Returns:
-            S: segfunc(A[left..right))
+            T: segfunc(A[left..right))
 
         TimeComplexity:
             O(logN)
@@ -221,3 +236,11 @@ class SegmentTree(Generic[S]):
             right >>= 1
 
         return self.segfunc(left_value, right_value)
+
+
+def RangeMinimumQuery(A: list[int]) -> SegmentTree[int]:
+    return SegmentTree[int](A, min, 10**15)
+
+
+def RangeSumQuery(A: list[int]) -> SegmentTree[int]:
+    return SegmentTree[int](A, lambda x, y: x + y, 0)
