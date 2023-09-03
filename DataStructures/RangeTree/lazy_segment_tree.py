@@ -13,9 +13,9 @@ class LazySegmentTree(Generic[T]):
         N: segment tree用に拡張した配列の長さ, _N以上の最小の2のべき乗
         segfunc (Callable[[T, T], T]): Segment Treeに乗せる演算
         ide_ele (T): segfuncに対する単位元
-        lazy_propagator (Callable[[T, Optional[T]], T]): 遅延情報を子に伝播する関数
-        lazy_calculator (Callable[[Optional[T], int, int, T], T]): 遅延情報を更新する関数
-        range_update_func (Callable[[T, T], T]): 遅延情報を元の配列に反映する関数
+        _lazy_propagator (Callable[[T, Optional[T]], T]): 遅延情報を子に伝播する関数
+        _lazy_calculator (Callable[[Optional[T], int, int, T], T]): 遅延情報を更新する関数
+        _range_update_func (Callable[[T, T], T]): 遅延情報を元の配列に反映する関数
         data (list[T]): データを格納するSegment Tree. 1-indexedで扱う.
         lazy (list[Optional[T]]): 遅延配列
 
@@ -59,9 +59,9 @@ class LazySegmentTree(Generic[T]):
         self.N = 1 << (self._N - 1).bit_length()
         self.segfunc = segfunc
         self.ide_ele = ide_ele
-        self.lazy_propagator = lazy_propagator
-        self.lazy_calculator = lazy_calculator
-        self.range_update_func = range_update_func
+        self._lazy_propagator = lazy_propagator
+        self._lazy_calculator = lazy_calculator
+        self._range_update_func = range_update_func
 
         # 配列の値
         self.data = self._build(A + [self.ide_ele] * (self.N - self._N))
@@ -97,14 +97,16 @@ class LazySegmentTree(Generic[T]):
 
         # 葉でない場合 -> 子に伝播 & 値の更新
         if node_k < self.N:
-            self.lazy[node_k << 1] = self.lazy_propagator(
+            self.lazy[node_k << 1] = self._lazy_propagator(
                 self.lazy[node_k], self.lazy[node_k << 1]
             )
-            self.lazy[(node_k << 1) + 1] = self.lazy_propagator(
+            self.lazy[(node_k << 1) + 1] = self._lazy_propagator(
                 self.lazy[node_k], self.lazy[(node_k << 1) + 1]
             )
 
-        self.data[node_k] = self.range_update_func(self.data[node_k], self.lazy[node_k])
+        self.data[node_k] = self._range_update_func(
+            self.data[node_k], self.lazy[node_k]
+        )
         self.lazy[node_k] = None
 
     def _range_update_recursion(
@@ -134,7 +136,7 @@ class LazySegmentTree(Generic[T]):
             return
         # ノード区間[node_left, node_right) ⊂ クエリ区間[left, right) -> 遅延情報を更新
         elif (left <= node_left) and (node_right <= right):
-            self.lazy[node_k] = self.lazy_calculator(
+            self.lazy[node_k] = self._lazy_calculator(
                 self.lazy[node_k], node_left, node_right, x
             )
             self._propagate(node_k)
