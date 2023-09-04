@@ -1,6 +1,10 @@
 from itertools import combinations
 
-from DataStructures.RangeTree.segment_tree import RangeMinimumQuery, RangeSumQuery, RangeCompositeQuery
+from DataStructures.RangeTree.segment_tree import (
+    RangeMinimumQuery,
+    RangeSumQuery,
+    RangeCompositeQuery,
+)
 
 
 def test_min_update():

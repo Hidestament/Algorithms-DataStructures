@@ -58,15 +58,25 @@ class LazySegmentTree:
         if node_k < self.N:
             self.lazy[node_k << 1] = (
                 (self.lazy[node_k][0] * self.lazy[node_k << 1][0]) % MOD,
-                (self.lazy[node_k][0] * self.lazy[node_k << 1][1] + self.lazy[node_k][1]) % MOD,
+                (
+                    self.lazy[node_k][0] * self.lazy[node_k << 1][1]
+                    + self.lazy[node_k][1]
+                )
+                % MOD,
             )
             self.lazy[(node_k << 1) + 1] = (
                 (self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][0]) % MOD,
-                (self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][1] + self.lazy[node_k][1]) % MOD,
+                (
+                    self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][1]
+                    + self.lazy[node_k][1]
+                )
+                % MOD,
             )
 
         if self.N <= node_k:
-            self.data[node_k] = (self.lazy[node_k][0] * self.data[node_k] + self.lazy[node_k][1]) % MOD
+            self.data[node_k] = (
+                self.lazy[node_k][0] * self.data[node_k] + self.lazy[node_k][1]
+            ) % MOD
         self.lazy[node_k] = (1, 0)
 
     def _propagated_segment(self, left: int, right: int) -> list[int]:

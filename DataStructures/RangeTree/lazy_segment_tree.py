@@ -451,13 +451,17 @@ def RangeMinimumRangeAdd(A: list[int]) -> LazySegmentTree[int, int]:
     DataValue = int
     UpdatedValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         return data_value + updated_value
 
     def lazy_calculator(node_length: int, x: UpdatedValue) -> UpdatedValue:
         return x
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         if child_value is None:
             return parent_value
         return parent_value + child_value
@@ -479,13 +483,17 @@ def RangeMinimumRangeUpdate(A: list[int]) -> LazySegmentTree[int, int]:
     DataValue = int
     UpdatedValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         return updated_value
 
     def lazy_calculator(node_length: int, x: UpdatedValue) -> UpdatedValue:
         return x
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         return parent_value
 
     return LazySegmentTree[DataValue, UpdatedValue](
@@ -505,13 +513,17 @@ def RangeSumRangeAdd(A: list[int]) -> LazySegmentTree[int, int]:
     DataValue = int
     UpdatedValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         return data_value + updated_value
 
     def lazy_calculator(node_length: int, x: UpdatedValue) -> UpdatedValue:
         return node_length * x
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         if child_value is None:
             return parent_value >> 1
         return (parent_value >> 1) + child_value
@@ -533,13 +545,17 @@ def RangeSumRangeUpdate(A: list[int]) -> LazySegmentTree[int, int]:
     DataValue = int
     UpdatedValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         return updated_value
 
     def lazy_calculator(node_length: int, x: UpdatedValue) -> UpdatedValue:
         return node_length * x
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         return parent_value >> 1
 
     return LazySegmentTree[DataValue, UpdatedValue](
@@ -562,7 +578,9 @@ def RangeSumRangeAffine(A: list[int]) -> LazySegmentTree[int, list[int, int]]:
     UpdatedValue = list[int, int]
     DataValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         a, b = updated_value[0], updated_value[1]
         return a * data_value + b
 
@@ -571,7 +589,9 @@ def RangeSumRangeAffine(A: list[int]) -> LazySegmentTree[int, list[int, int]]:
         # [元のノードにかける係数, 元のノードに足す値]
         return [b, node_length * c]
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         if child_value is None:
             child_value = [1, 0]
         b1, c1 = parent_value
@@ -583,7 +603,9 @@ def RangeSumRangeAffine(A: list[int]) -> LazySegmentTree[int, list[int, int]]:
     )
 
 
-def PointGetRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, list[int, int]]:
+def PointGetRangeAffineWithMod(
+    A: list[int], mod: int
+) -> LazySegmentTree[int, list[int, int]]:
     """Point Get Query & Range Affine Query
 
     Args:
@@ -600,14 +622,18 @@ def PointGetRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, l
     UpdatedValue = list[int, int]
     DataValue = int
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         a, b = updated_value[0], updated_value[1]
         return (a * data_value + b) % mod
 
     def lazy_calculator(node_length: int, x: UpdatedValue) -> UpdatedValue:
         return x
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         if child_value is None:
             child_value = [1, 0]
         b1, c1 = parent_value
@@ -620,7 +646,9 @@ def PointGetRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, l
     )
 
 
-def RangeSumRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, list[int, int]]:
+def RangeSumRangeAffineWithMod(
+    A: list[int], mod: int
+) -> LazySegmentTree[int, list[int, int]]:
     """Range Sum Query & Range Affine Query
 
     Args:
@@ -639,7 +667,9 @@ def RangeSumRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, l
 
     inverse = pow(2, -1, mod)
 
-    def range_update_func(data_value: DataValue, updated_value: UpdatedValue) -> DataValue:
+    def range_update_func(
+        data_value: DataValue, updated_value: UpdatedValue
+    ) -> DataValue:
         a, b = updated_value[0], updated_value[1]
         return (a * data_value + b) % mod
 
@@ -648,7 +678,9 @@ def RangeSumRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, l
         # [元のノードにかける係数, 元のノードに足す値]
         return [b, (node_length * c) % mod]
 
-    def lazy_propagator(parent_value: UpdatedValue, child_value: Optional[UpdatedValue]) -> UpdatedValue:
+    def lazy_propagator(
+        parent_value: UpdatedValue, child_value: Optional[UpdatedValue]
+    ) -> UpdatedValue:
         if child_value is None:
             child_value = [1, 0]
         b1, c1 = parent_value
@@ -656,5 +688,10 @@ def RangeSumRangeAffineWithMod(A: list[int], mod: int) -> LazySegmentTree[int, l
         return [(b1 * b2) % mod, ((c1 * inverse) + b1 * c2) % mod]
 
     return LazySegmentTree[DataValue, UpdatedValue](
-        A, lambda x, y: (x + y) % mod, 0, lazy_propagator, lazy_calculator, range_update_func
+        A,
+        lambda x, y: (x + y) % mod,
+        0,
+        lazy_propagator,
+        lazy_calculator,
+        range_update_func,
     )

@@ -280,5 +280,5 @@ def RangeCompositeQuery(A: list[list[int, int]]) -> SegmentTree[list[list[int, i
     return SegmentTree[list[list[int, int]]](
         A=A,
         segfunc=lambda x, y: [(y[0] * x[0]) % MOD, (y[0] * x[1] + y[1]) % MOD],
-        ide_ele=[1, 0]
+        ide_ele=[1, 0],
     )

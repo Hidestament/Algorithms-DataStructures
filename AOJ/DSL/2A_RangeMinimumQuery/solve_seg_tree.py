@@ -8,7 +8,7 @@ from DataStructures.RangeTree.segment_tree import RangeMinimumQuery
 input = sys.stdin.readline
 
 N, Q = map(int, input().split())
-seg = RangeMinimumQuery([2 ** 31 - 1 for _ in range(N)])
+seg = RangeMinimumQuery([2**31 - 1 for _ in range(N)])
 
 for _ in range(Q):
     query = list(map(int, input().split()))

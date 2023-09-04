@@ -195,16 +195,38 @@ def test_add_no_recursion_range_minimum_range_add():
     assert seg.data == [
         1000000000000000,
         8,
-        8, 13,
-        8, 9, 13, 13,
-        8, 12, 2, 11, 9, 6, 27, 13
+        8,
+        13,
+        8,
+        9,
+        13,
+        13,
+        8,
+        12,
+        2,
+        11,
+        9,
+        6,
+        27,
+        13,
     ]
     assert seg.lazy == [
         None,
         None,
-        None, None,
-        None, None, None, None,
-        None, None, 7, 7, 7, 7, None, None
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        7,
+        7,
+        7,
+        7,
+        None,
+        None,
     ]
 
     # A = [8, 12, 9, 27, 25, 13, 27, 13]
