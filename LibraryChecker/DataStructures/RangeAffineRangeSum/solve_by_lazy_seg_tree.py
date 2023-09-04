@@ -1,14 +1,17 @@
-# https://judge.yosupo.jp/submission/159426
+# https://judge.yosupo.jp/submission/159438
 # 抽象化LazySegmentTreeを高速化したもの
 
-from array import array
+from itertools import chain
 import sys
+from array import array
+
 
 MOD = 998244353
+INV_2 = pow(2, -1, MOD)
 
 
 class LazySegmentTree:
-    """抽象化LazySegmentTreeを高速化したもの
+    """区間更新・区間取得を O(log N)で行う
 
     Attributes:
         _N: 元の配列の長さ
@@ -17,22 +20,15 @@ class LazySegmentTree:
         lazy (list[tuple[int, int]]): 遅延配列
 
     Methods:
-        range_update(left: int, right: int, x: list[int, int]): A[left..right)の値をrange_update_func(x)で更新する, O(logN)
-        get(i: int): A[i], O(logN)
-
-    Notes:
-        Bit演算
-        iの左の子 -> i << 1
-        iの右の子 -> (i << 1) + 1
-        iの親 -> i >> 1
-        i & -i ->
+        range_update(left: int, right: int, x: tuple[int, int]): 非再帰 A[left..right)の値をrange_update_func(x)で更新する, O(logN)
+        query(left: int, right: int): 非再帰 sum(A[left..right))の値を取得する, O(logN)
     """
 
     def __init__(self, A: list[int]):
         """Segment Tree
 
         Args:
-            A (list[T]): 元の配列
+            A (list[int]): 元の配列
 
         TimeComplexity:
             O(N logN)
@@ -42,11 +38,26 @@ class LazySegmentTree:
         self.N = 1 << (self._N - 1).bit_length()
 
         # 配列の値
-        self.data = array("i", [0] * (2 * self.N))
-        for i, a in enumerate(A, start=self.N):
-            self.data[i] = a
+        self.data = self._build(A + [0] * (self.N - self._N))
         # 遅延配列
-        self.lazy: list[list[int, int]] = [(1, 0)] * (2 * self.N)
+        self.lazy: list[tuple[int, int]] = [(1, 0) for _ in range(2 * self.N)]
+
+    def _build(self, A: list[int]) -> list[int]:
+        """元の配列からセグメント木を構築する
+
+        Args:
+            A (list[int]): 元の配列を2^kの長さに拡張した配列
+
+        Returns:
+            list[int]: Segment Tree
+        """
+        data = [A]
+        for _ in range(self.N.bit_length() - 1):
+            _A = data[-1]
+            data.append([(_A[i] + _A[i + 1]) % MOD for i in range(0, len(_A), 2)])
+
+        data.append([0])
+        return array("i", chain.from_iterable(data[::-1]))
 
     def _propagate(self, node_k: int):
         """ノードnode_kの遅延情報を子に伝播し, ノードnode_kの値を更新する
@@ -54,29 +65,32 @@ class LazySegmentTree:
         Args:
             k (int): segment treeのノード番号. 1-indexed.
         """
+        # 伝播する値がない場合 -> 何もしない
+        if self.lazy[node_k] == (1, 0):
+            return
+
         # 葉でない場合 -> 子に伝播 & 値の更新
         if node_k < self.N:
             self.lazy[node_k << 1] = (
                 (self.lazy[node_k][0] * self.lazy[node_k << 1][0]) % MOD,
                 (
-                    self.lazy[node_k][0] * self.lazy[node_k << 1][1]
-                    + self.lazy[node_k][1]
+                    self.lazy[node_k][1] * INV_2
+                    + self.lazy[node_k][0] * self.lazy[node_k << 1][1]
                 )
                 % MOD,
             )
             self.lazy[(node_k << 1) + 1] = (
                 (self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][0]) % MOD,
                 (
-                    self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][1]
-                    + self.lazy[node_k][1]
+                    self.lazy[node_k][1] * INV_2
+                    + self.lazy[node_k][0] * self.lazy[(node_k << 1) + 1][1]
                 )
                 % MOD,
             )
 
-        if self.N <= node_k:
-            self.data[node_k] = (
-                self.lazy[node_k][0] * self.data[node_k] + self.lazy[node_k][1]
-            ) % MOD
+        self.data[node_k] = (
+            self.lazy[node_k][0] * self.data[node_k] + self.lazy[node_k][1]
+        ) % MOD
         self.lazy[node_k] = (1, 0)
 
     def _propagated_segment(self, left: int, right: int) -> list[int]:
@@ -114,13 +128,13 @@ class LazySegmentTree:
 
         return segment[::-1]
 
-    def range_update(self, left: int, right: int, x: list[int, int]):
+    def range_update(self, left: int, right: int, x: tuple[int, int]):
         """非再帰 A[left..right)の値をrange_update_func(x)で上書きする
 
         Args:
             left (int): 下限index. 0-indexed.
             right (int): 上限index. 0-indexed.
-            x (list[int, int]): 更新値.
+            x (tuple[int, int]): 更新値.
 
         Notes
             1. 根 -> 対象区間までLazyを伝播
@@ -146,14 +160,14 @@ class LazySegmentTree:
 
             # 奇数なら対象ノードは親の右のノードなので, 対象区間
             if left & 1:
-                self.lazy[left] = x
+                self.lazy[left] = (x[0], (length * x[1]) % MOD)
                 self._propagate(left)
                 left += 1
 
             # 奇数なら対象ノードは親の左のノードなので, 対象区間
             if right & 1:
                 right -= 1
-                self.lazy[right] = x
+                self.lazy[right] = (x[0], (length * x[1]) % MOD)
                 self._propagate(right)
 
             # 親に登る
@@ -161,49 +175,77 @@ class LazySegmentTree:
             right >>= 1
             length <<= 1
 
-    def get(self, i: int) -> int:
-        """元の配列A[i]の値を取得する
+        # 3. 対象区間 -> 根までのDataの値を更新
+        for node_k in reversed(propagated_segment):
+            self._propagate(node_k << 1)
+            self._propagate((node_k << 1) + 1)
+            self.data[node_k] = (
+                self.data[node_k << 1] + self.data[(node_k << 1) + 1]
+            ) % MOD
+
+    def query(self, left: int, right: int) -> int:
+        """非再起segfunc(A[left..right))
 
         Args:
-            i (int): index. 0-indexed.
+            left (int): 下限index. 0-indexed.
+            right (int): 上限index. 0-indexed.
 
         Returns:
-            T: A[i]
+            T: segfunc(A[left..right))
+
+        Notes
+            1. 根 -> 対象区間までLazyを伝播
+            2. 対象区間の集約値を計算
 
         TimeComplexity:
-            O(log N)
+            O(logN)
         """
-        node_k = 1
-        node_left, node_right = 0, self.N
-        while node_k < len(self.data):
+        propagated_segment = self._propagated_segment(left, right)
+
+        # 1. 根 -> 対象区間までLazyを伝播
+        for node_k in propagated_segment:
             self._propagate(node_k)
 
-            node_mid = (node_left + node_right) >> 1
-            # 左の子に含まれる場合
-            if i < node_mid:
-                node_k <<= 1
-                node_right = node_mid
-            # 右の子に含まれる場合
-            else:
-                node_k = (node_k << 1) + 1
-                node_left = node_mid
+        # 2. 対象区間の集約地の取得
+        left += self.N
+        right += self.N
 
-        return self.data[i + self.N]
+        s = 0
+        while left < right:
+            # 奇数なら対象ノードは親の右のノードなので, 対象区間
+            if left & 1:
+                self._propagate(left)
+                s += self.data[left]
+                s %= MOD
+                left += 1
+
+            # 奇数なら対象ノードは親の左のノードなので, 対象区間
+            if right & 1:
+                right -= 1
+                self._propagate(right)
+                s += self.data[right]
+                s %= MOD
+
+            # 親に登る
+            left >>= 1
+            right >>= 1
+
+        return s % MOD
 
 
-input = sys.stdin.readline
+if __name__ == "__main__":
+    input = sys.stdin.readline
 
+    MOD = 998244353
 
-N, Q = map(int, input().split())
-A = list(map(int, input().split()))
-
-seg = LazySegmentTree(A)
-
-for _ in range(Q):
-    query = list(map(int, input().split()))
-    if query[0] == 0:
-        left, right, b, c = query[1:]
-        seg.range_update(left, right, [b, c])
-    else:
-        i = query[1]
-        print(seg.get(i) % MOD)
+    N, Q = map(int, input().split())
+    A = list(map(int, input().split()))
+    seg = LazySegmentTree(A)
+    for _ in range(Q):
+        query = list(map(int, input().split()))
+        if query[0] == 0:
+            left, right, b, c = query[1:]
+            seg.range_update(left, right, (b, c))
+        else:
+            left, right = query[1:]
+            print(seg.query(left, right) % MOD)
