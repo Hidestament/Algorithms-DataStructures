@@ -8,7 +8,7 @@ def _dfs_no_recursion(
     graph: AdjacencyListWithEdgeNumber,
     status: list[int],
     root: int,
-) -> (Deque[tuple[int, int]], int):
+) -> tuple[Deque[tuple[int, int]], int]:
     """非再帰DFS. 閉路が存在する場合は閉路の頂点列を返す.
 
     Args:
@@ -17,7 +17,7 @@ def _dfs_no_recursion(
         root (int): 探索の起点となる頂点.
 
     Returns:
-        (Deque[tuple[int, int]], int): 探索中の(頂点, 辺)列, 閉路の起点. 閉路が存在しない場合は-1.
+        tuple[Deque[tuple[int, int]], int]: 探索中の(頂点, 辺)列, 閉路の起点. 閉路が存在しない場合は-1.
     """
     # 探索対象の頂点 (頂点, 辿ってきた辺)
     dq = deque([(root, -1)])
@@ -57,7 +57,7 @@ def _dfs_no_recursion(
 
 def _restore_cycle(
     searching: Deque[tuple[int, int]], start: int
-) -> (list[int], list[int]):
+) -> tuple[list[int], list[int]]:
     """閉路の頂点列を復元する.
 
     Args:
@@ -65,7 +65,7 @@ def _restore_cycle(
         start (int): 閉路の起点.
 
     Returns:
-        (list[int], list[int]): 閉路の頂点列, 閉路の辺列.
+        tuple[list[int], list[int]]: 閉路の頂点列, 閉路の辺列.
     """
     while searching[0][0] != start:
         searching.popleft()
@@ -76,14 +76,14 @@ def _restore_cycle(
     return cycle_v, cycle_e[1:]
 
 
-def cycle_detection(graph: AdjacencyListWithEdgeNumber) -> (list[int], list[int]):
+def cycle_detection(graph: AdjacencyListWithEdgeNumber) -> tuple[list[int], list[int]]:
     """グラフにおける閉路の検出. 非再帰DFSを使用. 閉路が存在するならば閉路の頂点列, 辺列を1つ返す.
 
     Args:
         graph (AdjacencyListWithEdgeNumber): グラフの隣接リスト. 辺の番号も持つ. 連結・単純・無向どちらでもOK.
 
     Returns:
-        (list[int], list[int]): (閉路の頂点列, 閉路の辺列). 存在しない場合は空リスト.
+        tuple[list[int], list[int]]: (閉路の頂点列, 閉路の辺列). 存在しない場合は空リスト.
 
     TimeComplexity:
         O(N + M)
