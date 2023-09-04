@@ -3,7 +3,7 @@ from heapq import heappush, heappop
 from Algorithms.Graph.Common.type import AdjacencyListWithWeight
 
 
-def dijkstra(graph: AdjacencyListWithWeight, start: int) -> (list[int], list[int]):
+def dijkstra(graph: AdjacencyListWithWeight, start: int) -> tuple[list[int], list[int]]:
     """単一始点最短経路 (SSSP) を求める. 経路復元のための先行頂点も求める.
 
     Args:
@@ -11,7 +11,7 @@ def dijkstra(graph: AdjacencyListWithWeight, start: int) -> (list[int], list[int
         start (int): 始点.
 
     Returns:
-        (list[int], list[int]): (距離, 先行頂点). 到達できない場合は float("INF"), -1 が入る.
+        tuple[list[int], list[int]]: (距離, 先行頂点). 到達できない場合は float("INF"), -1 が入る.
 
     TimeComplexity:
         O((E + V) log V)
