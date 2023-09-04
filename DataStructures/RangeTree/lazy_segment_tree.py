@@ -26,7 +26,7 @@ class LazySegmentTree(Generic[T, S]):
         one_point_update_recursion(i: int, x: S): 再帰 A[i..i+1)の値をrange_update_func(x)で更新する, O(logN)
         one_point_update(i: int, x: S): 非再帰 A[i..i+1)の値をrange_update_func(x)で更新する, O(logN)
         query_recursion(left: int, right: int): 再帰 segfunc(A[left..right))の値を取得する, O(logN)
-        query_recursion(left: int, right: int): 非再帰 segfunc(A[left..right))の値を取得する, O(logN)
+        query(left: int, right: int): 非再帰 segfunc(A[left..right))の値を取得する, O(logN)
         get(i: int): A[i], O(logN)
 
     Notes:
