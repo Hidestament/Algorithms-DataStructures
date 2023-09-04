@@ -1,4 +1,4 @@
-# https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/DSL_2_E/judge/8243572/Python3
+# https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/DSL_2_E/judge/8243539/PyPy3
 
 from DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeAdd
 
@@ -12,7 +12,7 @@ for _ in range(Q):
     query = list(map(int, input().split()))
     if query[0] == 0:
         left, right, x = query[1:]
-        seg.range_update_recursion(left - 1, right, x)
+        seg.range_update(left - 1, right, x)
     else:
         i = query[1]
         print(seg[i - 1])

@@ -1,4 +1,4 @@
-# https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/DSL_2_I/judge/8243593/PyPy3
+# https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/DSL_2_I/judge/8243565/PyPy3
 
 import sys
 
@@ -14,7 +14,7 @@ for _ in range(Q):
     query = list(map(int, input().split()))
     if query[0] == 0:
         left, right, x = query[1:]
-        seg.range_update_recursion(left, right + 1, x)
+        seg.range_update(left, right + 1, x)
     else:
         left, right = query[1:]
-        print(seg.query_recursion(left, right + 1))
+        print(seg.query(left, right + 1))
