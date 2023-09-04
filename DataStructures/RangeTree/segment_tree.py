@@ -239,8 +239,46 @@ class SegmentTree(Generic[T]):
 
 
 def RangeMinimumQuery(A: list[int]) -> SegmentTree[int]:
+    """Range Minimum Query
+
+    Args:
+        A (list[int]): Segment Treeに乗せる配列
+
+    Returns:
+        SegmentTree[int]: Range Minimum Query
+    """
     return SegmentTree[int](A, min, 10**15)
 
 
 def RangeSumQuery(A: list[int]) -> SegmentTree[int]:
+    """Range Sum Query
+
+    Args:
+        A (list[int]): Segment Treeに乗せる配列
+
+    Returns:
+        SegmentTree[int]: Range Sum Query
+    """
     return SegmentTree[int](A, lambda x, y: x + y, 0)
+
+
+def RangeCompositeQuery(A: list[list[int, int]]) -> SegmentTree[list[list[int, int]]]:
+    """Range Composite Query
+
+    Args:
+        A (list[list[int, int]]): Segment Treeに乗せる配列
+
+    Returns:
+        SegmentTree[list[list[int, int]]]: Range Composite Query
+
+    Notes:
+        A[i] = [a, b] -> f_i(x) = ax + b
+        query(left, right) = f_{right-1}(f_{right-2}..(...f_{left}(x)))
+        MOD付き
+    """
+    MOD = 998244353
+    return SegmentTree[list[list[int, int]]](
+        A=A,
+        segfunc=lambda x, y: [(y[0] * x[0]) % MOD, (y[0] * x[1] + y[1]) % MOD],
+        ide_ele=[1, 0]
+    )
