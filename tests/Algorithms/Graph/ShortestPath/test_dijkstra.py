@@ -1,4 +1,4 @@
-from Algorithms.Graph.ShortestPath.dijkstra import dijkstra
+from src.Algorithms.Graph.ShortestPath.dijkstra import dijkstra
 
 
 def test_tree_no_weight():

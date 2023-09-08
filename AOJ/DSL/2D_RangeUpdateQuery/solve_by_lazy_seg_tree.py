@@ -1,6 +1,6 @@
 # https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/DSL_2_D/judge/8243533/PyPy3
 
-from DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeUpdate
+from src.DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeUpdate
 
 
 N, Q = map(int, input().split())

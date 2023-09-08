@@ -1,7 +1,7 @@
 from typing import Optional
 from heapq import heappush, heappop
 
-from DataStructures.BitVector.bit_vector_accumulate import BitVectorAcc as BitVector
+from src.DataStructures.BitVector.bit_vector_accumulate import BitVectorAcc as BitVector
 
 
 class WaveletMatrix:

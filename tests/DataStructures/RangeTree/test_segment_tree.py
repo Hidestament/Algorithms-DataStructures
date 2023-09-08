@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from DataStructures.RangeTree.segment_tree import (
+from src.DataStructures.RangeTree.segment_tree import (
     RangeMinimumQuery,
     RangeSumQuery,
     RangeCompositeQuery,

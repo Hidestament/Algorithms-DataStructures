@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
+from src.DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
 
 
 def test_add():

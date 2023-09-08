@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.RangeTree.segment_tree import RangeSumQuery
+from src.DataStructures.RangeTree.segment_tree import RangeSumQuery
 
 
 input = sys.stdin.readline

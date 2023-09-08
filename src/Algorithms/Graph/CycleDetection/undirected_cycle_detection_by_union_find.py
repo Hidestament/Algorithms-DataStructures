@@ -1,5 +1,5 @@
-from Algorithms.Graph.Common.type import EdgeList
-from DataStructures.DisjointSet.union_find_tree import UnionFindTree
+from src.common.Graph.type import EdgeList
+from src.DataStructures.DisjointSet.union_find_tree import UnionFindTree
 
 
 def undirected_cycle_detection_by_uf(

@@ -1,7 +1,7 @@
 from typing import Optional
 from itertools import accumulate
 
-from DataStructures.BitVector.bit_vector_base import BitVectorBase
+from src.DataStructures.BitVector.bit_vector_base import BitVectorBase
 
 
 class BitVectorAcc(BitVectorBase):

@@ -1,4 +1,4 @@
-from Algorithms.Graph.CycleDetection.undirected_cycle_detection_by_union_find import (
+from src.Algorithms.Graph.CycleDetection.undirected_cycle_detection_by_union_find import (
     undirected_cycle_detection_by_uf,
 )
 

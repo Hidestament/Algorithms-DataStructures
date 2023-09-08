@@ -2,7 +2,7 @@
 
 import sys
 
-from Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
+from src.Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
 
 
 input = sys.stdin.readline

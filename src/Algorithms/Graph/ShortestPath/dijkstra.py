@@ -1,6 +1,6 @@
 from heapq import heappush, heappop
 
-from Algorithms.Graph.Common.type import AdjacencyListWithWeight
+from src.common.Graph.type import AdjacencyListWithWeight
 
 
 def dijkstra(graph: AdjacencyListWithWeight, start: int) -> tuple[list[int], list[int]]:

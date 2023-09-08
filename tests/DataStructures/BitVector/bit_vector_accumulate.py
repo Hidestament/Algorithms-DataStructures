@@ -1,4 +1,4 @@
-from DataStructures.BitVector.bit_vector_accumulate import BitVectorAcc as BitVector
+from src.DataStructures.BitVector.bit_vector_accumulate import BitVectorAcc as BitVector
 
 
 def test_rank1():

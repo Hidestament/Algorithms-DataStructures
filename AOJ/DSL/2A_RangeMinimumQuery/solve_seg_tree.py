@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.RangeTree.segment_tree import RangeMinimumQuery
+from src.DataStructures.RangeTree.segment_tree import RangeMinimumQuery
 
 
 input = sys.stdin.readline

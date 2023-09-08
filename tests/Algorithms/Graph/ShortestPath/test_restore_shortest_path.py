@@ -1,5 +1,5 @@
-from Algorithms.Graph.ShortestPath.dijkstra import dijkstra
-from Algorithms.Graph.ShortestPath.reconstruct_shortest_path import (
+from src.Algorithms.Graph.ShortestPath.dijkstra import dijkstra
+from src.Algorithms.Graph.ShortestPath.reconstruct_shortest_path import (
     reconstruct_shortest_path,
 )
 

@@ -1,4 +1,4 @@
-from DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeAdd
+from src.DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeAdd
 
 
 def test_propagated_segment():

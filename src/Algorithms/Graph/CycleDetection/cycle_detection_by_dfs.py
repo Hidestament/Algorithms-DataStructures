@@ -1,7 +1,7 @@
 from typing import Deque
 from collections import deque
 
-from Algorithms.Graph.Common.type import AdjacencyListWithEdgeNumber
+from src.common.Graph.type import AdjacencyListWithEdgeNumber
 
 
 def _dfs_no_recursion(

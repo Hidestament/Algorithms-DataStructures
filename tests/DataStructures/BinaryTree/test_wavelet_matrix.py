@@ -1,7 +1,7 @@
 from itertools import combinations
 from collections import Counter
 
-from DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
+from src.DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
 
 
 def test_access():

@@ -2,7 +2,7 @@
 
 import sys
 
-from Algorithms.Graph.ShortestPath.dijkstra import dijkstra
+from src.Algorithms.Graph.ShortestPath.dijkstra import dijkstra
 
 
 input = sys.stdin.readline

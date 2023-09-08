@@ -1,4 +1,4 @@
-from DataStructures.RangeTree.lazy_segment_tree import (
+from src.DataStructures.RangeTree.lazy_segment_tree import (
     RangeSumRangeAffine,
     PointGetRangeAffineWithMod,
 )

@@ -1,4 +1,4 @@
-from Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
+from src.Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
 
 
 def test_undirected_tree_simple():

@@ -1,6 +1,6 @@
 from itertools import combinations
 
-from DataStructures.RangeTree.lazy_segment_tree import RangeSumRangeAdd
+from src.DataStructures.RangeTree.lazy_segment_tree import RangeSumRangeAdd
 
 
 def test_build_range_sum_range_add():
