@@ -2,7 +2,9 @@
 
 import sys
 
-from src.Algorithms.Graph.LowestCommonAncestors.heavy_light_decomposition import HeavyLightDecomposition
+from src.Algorithms.Graph.LowestCommonAncestors.heavy_light_decomposition import (
+    HeavyLightDecomposition,
+)
 
 
 input = sys.stdin.readline
