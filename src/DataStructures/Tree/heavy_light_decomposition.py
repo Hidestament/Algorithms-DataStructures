@@ -130,7 +130,11 @@ class HeavyLightDecomposition:
 
     def dist(self, u, v):
         lca = self.lowest_common_ancestor(u, v)
-        d = self.dist_from_root(u) + self.dist_from_root(v) - 2 * self.dist_from_root(lca)
+        d = (
+            self.dist_from_root(u)
+            + self.dist_from_root(v)
+            - 2 * self.dist_from_root(lca)
+        )
         return d
 
 

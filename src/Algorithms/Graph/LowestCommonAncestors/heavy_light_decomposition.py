@@ -25,7 +25,7 @@ class HeavyLightDecomposition:
         self,
         graph: Union[AdjacencyList, AdjacencyListWithWeight],
         root: int = 0,
-        weighted: bool = False
+        weighted: bool = False,
     ):
         """HL分解
 
@@ -166,7 +166,7 @@ class HeavyLightDecomposition:
         self,
         graph: Union[AdjacencyList, AdjacencyListWithWeight],
         root: int,
-        heavy_child: list[Optional[int]]
+        heavy_child: list[Optional[int]],
     ):
         """heavy_childをもとに, heavy pathを縮約しHL分解する
 
@@ -223,8 +223,11 @@ class HeavyLightDecomposition:
             root (int): 根とする頂点
             weighted (bool): True -> 重み付き, False -> 重みなし.
         """
-        heavy_child = self._calculate_heavy_child_with_weight(graph, root) \
-            if weighted else self._calculate_heavy_child_no_weight(graph, root)
+        heavy_child = (
+            self._calculate_heavy_child_with_weight(graph, root)
+            if weighted
+            else self._calculate_heavy_child_no_weight(graph, root)
+        )
         self._decomposition(graph, root, heavy_child)
 
     def _head(self, v):
