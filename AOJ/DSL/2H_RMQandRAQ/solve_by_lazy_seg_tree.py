@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeAdd
+from src.DataStructures.RangeTree.lazy_segment_tree import RangeMinimumRangeAdd
 
 
 input = sys.stdin.readline

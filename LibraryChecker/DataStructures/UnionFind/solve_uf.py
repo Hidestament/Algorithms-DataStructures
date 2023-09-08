@@ -1,6 +1,6 @@
 # https://judge.yosupo.jp/submission/158479
 
-from DataStructures.DisjointSet.union_find_tree import UnionFindTree
+from src.DataStructures.DisjointSet.union_find_tree import UnionFindTree
 
 
 N, Q = map(int, input().split())

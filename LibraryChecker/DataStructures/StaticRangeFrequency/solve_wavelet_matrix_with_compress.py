@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
+from src.DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
 
 input = sys.stdin.readline
 

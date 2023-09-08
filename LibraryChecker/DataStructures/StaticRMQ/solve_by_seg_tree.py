@@ -1,6 +1,6 @@
 # https://judge.yosupo.jp/submission/158955
 
-from DataStructures.RangeTree.segment_tree import SegmentTree
+from src.DataStructures.RangeTree.segment_tree import SegmentTree
 
 
 N, Q = map(int, input().split())

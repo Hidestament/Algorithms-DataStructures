@@ -1,6 +1,6 @@
 # https://judge.yosupo.jp/submission/158510
 
-from DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
+from src.DataStructures.BinaryTree.wavelet_matrix import WaveletMatrix
 
 
 N, Q = map(int, input().split())

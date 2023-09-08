@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.RangeTree.lazy_segment_tree import RangeSumRangeUpdate
+from src.DataStructures.RangeTree.lazy_segment_tree import RangeSumRangeUpdate
 
 
 input = sys.stdin.readline

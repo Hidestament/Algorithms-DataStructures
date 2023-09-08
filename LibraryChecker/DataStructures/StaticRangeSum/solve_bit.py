@@ -1,6 +1,6 @@
 # https://judge.yosupo.jp/submission/158575
 
-from DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
+from src.DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
 
 
 N, Q = map(int, input().split())

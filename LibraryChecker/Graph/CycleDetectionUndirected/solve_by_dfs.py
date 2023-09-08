@@ -1,6 +1,6 @@
 # https://judge.yosupo.jp/submission/158748
 
-from Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
+from src.Algorithms.Graph.CycleDetection.cycle_detection_by_dfs import cycle_detection
 
 
 N, M = map(int, input().split())

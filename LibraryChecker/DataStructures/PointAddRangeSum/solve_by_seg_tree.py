@@ -2,7 +2,7 @@
 
 import sys
 
-from DataStructures.RangeTree.segment_tree import SegmentTree
+from src.DataStructures.RangeTree.segment_tree import SegmentTree
 
 
 input = sys.stdin.readline
