@@ -7,7 +7,7 @@ from src.DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
 
 
 class HeavyLightDecompositionOnBIT:
-    """HL分解 (非再帰)
+    """HL分解 + BIT (非再帰)
 
     Attributes:
         prev (list[int]): vの先行頂点

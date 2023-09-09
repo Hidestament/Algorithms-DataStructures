@@ -1,13 +1,16 @@
-from typing import Optional
+from typing import Optional, Callable, TypeVar, Generic
 from collections import deque
 from itertools import chain
 
 from src.common.Graph.type import AdjacencyList
-from src.DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
+from src.DataStructures.RangeTree.segment_tree import SegmentTree
 
 
-class HeavyLightDecompositionOnBIT:
-    """HL分解 (非再帰)
+T = TypeVar("T")
+
+
+class HeavyLightDecompositionOnSegmentTree(Generic[T]):
+    """HL分解 + SegmentTree(非再帰)
 
     Attributes:
         prev (list[int]): vの先行頂点
@@ -15,29 +18,33 @@ class HeavyLightDecompositionOnBIT:
         heavy_node (list[list[int]]): 縮約後の頂点列
         heavy_node_depth (list[int]): 縮約御の頂点の深さ
         heavy_node_mappings (list[int]): 頂点vが属する集約後の頂点番号
-        heavy_node_start_on_bit (list[int]): bit上でのheavy_nodeの開始位置
-        bit (BinaryIndexedTree): 頂点の重みを管理するBIT
+        heavy_node_start_on_seg_tree (list[int]): bit上でのheavy_nodeの開始位置
+        seg_tree1 (SegmentTree[T]): root -> u 方向の頂点の集約値を管理するSegmentTree
+        seg_tree2 (SegmentTree[T]): u -> root 方向の頂点の集約値を管理するSegmentTree (演算が可換の場合はいらない)
 
     Methods:
         lowest_common_ancestor(u, v): u, vの最小共通祖先を求める, O(log N)
-        get_vertex_weight(u): 頂点uの重みを返す, O(log N)
-        add_vertex_weight(u, w): 頂点uの重みにwを加算する (V_u += w), O(log N)
-        add_vertex_weight(u, w): 頂点uの重みをwに変更する (V_u = w), O(log N)
-        vertex_sum_from_root(u): root -> u の頂点の重みの和を求める (root, uの重みも含む), O((log N)^2)
+        get_vertex_value(u): 頂点uの重みを返す, O(log N)
+        add_vertex_value(u, w): 頂点uの重みにwを加算する (V_u += w), O(log N)
+        update_vertex_value(u, w): 頂点uの重みをwに変更する (V_u = w), O(log N)
         vertex_sum(u, v): u -> v の頂点の重みの和を求める (u, vの重みも含む), O((log N)^2)
     """
 
     def __init__(
         self,
         graph: AdjacencyList,
-        weights: list[int],
+        vertex_value: list[T],
+        segfunc: Callable[[T, T], T],
+        ide_ele: T,
         root: int = 0,
     ):
         """HL分解
 
         Args:
             graph (AdjacencyList): 木グラフ
-            weights (list[int]): 頂点の重み
+            vertex_value (list[T]): 頂点の値
+            segfunc (Callable[[T, T], T]): 2頂点の値をマージする関数
+            ide_ele (T): segfuncに対する単位元
             root (int): 根とする頂点
 
         TimeComplexity:
@@ -55,10 +62,10 @@ class HeavyLightDecompositionOnBIT:
         self.heavy_node_depth = []
         # heavy_node_mappings[v]: 頂点vが属する集約後の頂点番号
         self.heavy_node_mappings = [-1] * N
-        # heavy_node_start_on_bit[v]: bit上でのheavy_nodeの開始位置
-        self.heavy_node_start_on_bit = []
+        # heavy_node_start_on_seg_tree[v]: SegmentTree上でのheavy_nodeの開始位置
+        self.heavy_node_start_on_seg_tree = []
 
-        self._build(graph, weights, root)
+        self._build(graph, vertex_value, segfunc, ide_ele, root)
 
     def _calculate_heavy_child(
         self,
@@ -160,34 +167,50 @@ class HeavyLightDecompositionOnBIT:
             self.heavy_node.append(heavy_path)
             self.heavy_node_depth.append(depth)
 
-    def _build_bit(self, weights: list[int]):
-        """BITの構築
+    def _build_segment_tree(
+        self,
+        vertex_value: list[T],
+        segfunc: Callable[[T, T], T],
+        ide_ele: T,
+    ):
+        """SegmentTreeの構築
 
         Args:
-            weights (list[int]): 頂点の重み
+            vertex_value (list[T]): 頂点の値
+            segfunc (Callable[[T, T], T]): 2頂点の値をマージする関数
+            ide_ele (T): segfuncに対する単位元
 
         TimeComplexity:
             O(N logN)
         """
-        bit = [weights[v] for v in chain.from_iterable(self.heavy_node)]
-        self.bit = BinaryIndexedTree(bit)
+        seg_data = [vertex_value[v] for v in chain.from_iterable(self.heavy_node)]
+        self.seg_tree1 = SegmentTree[T](seg_data, segfunc, ide_ele)
+        self.seg_tree2 = SegmentTree[T](
+            A=seg_data,
+            segfunc=lambda x, y: segfunc(y, x),
+            ide_ele=ide_ele,
+        )
 
         s = 0
         for heavy in self.heavy_node:
-            self.heavy_node_start_on_bit.append(s)
+            self.heavy_node_start_on_seg_tree.append(s)
             s += len(heavy)
 
     def _build(
         self,
         graph: AdjacencyList,
-        weights: list[int],
+        vertex_value: list[T],
+        segfunc: Callable[[T, T], T],
+        ide_ele: T,
         root: int,
     ):
-        """HL分解 & BITの構築 を行う
+        """HL分解 & SegmentTreeの構築
 
         Args:
             graph (AdjacencyList): 木グラフ
-            weights (list[int]): 頂点の重み
+            vertex_value (list[T]): 頂点の値
+            segfunc (Callable[[T, T], T]): 2頂点の値をマージする関数
+            ide_ele (T): segfuncに対する単位元
             root (int): 根とする頂点
 
         TimeComplexity:
@@ -195,7 +218,7 @@ class HeavyLightDecompositionOnBIT:
         """
         heavy_child = self._calculate_heavy_child(graph, root)
         self._decompose(graph, root, heavy_child)
-        self._build_bit(weights)
+        self._build_segment_tree(vertex_value, segfunc, ide_ele)
 
     def _get_heavy_node_depth(self, u: int) -> int:
         """uが属するheavy nodeの深さを返す
@@ -245,96 +268,139 @@ class HeavyLightDecompositionOnBIT:
         # u, vが同じheavy pathにいるので, 根に近い方がLCA
         return u if self.depth_on_heavy_path[u] < self.depth_on_heavy_path[v] else v
 
-    def _get_bit_index(self, u: int) -> int:
-        """BIT上での頂点uのindexを返す
+    def _get_seg_tree_index(self, u: int) -> int:
+        """SegmentTree上での頂点uのindexを返す
 
         Args:
             u (int): 頂点 (縮約前)
 
         Returns:
-            int: BIT上でのindex
+            int: SegmentTree上でのindex
         """
         heavy_node = self.heavy_node_mappings[u]
-        head_ind = self.heavy_node_start_on_bit[heavy_node]
+        head_ind = self.heavy_node_start_on_seg_tree[heavy_node]
         ind = head_ind + self.depth_on_heavy_path[u]
         return ind
 
-    def get_vertex_weight(self, u: int) -> int:
-        """頂点uの重みを返す
+    def get_vertex_value(self, u: int) -> T:
+        """頂点uの値を返す
 
         Args:
             u (int): 頂点 (縮約前)
 
         Returns:
-            int: 頂点uの重み
+            T: 頂点uの値
         """
-        return self.bit.get(self._get_bit_index(u))
+        return self.seg_tree1.get(self._get_seg_tree_index(u))
 
-    def add_vertex_weight(self, u: int, w: int):
-        """頂点uの重みにwを加算する (V_u += w)
+    def add_vertex_value(self, u: int, w: T):
+        """頂点uの値にwを加算する (V_u += w)
 
         Args:
             u (int): 頂点 (縮約前)
-            w (int): 加算値
+            w (T): 加算値
         """
-        self.bit.add(self._get_bit_index(u), w)
+        self.seg_tree1.add(self._get_seg_tree_index(u), w)
+        self.seg_tree2.add(self._get_seg_tree_index(u), w)
 
-    def update_vertex_weight(self, u: int, w: int):
-        """頂点uの重みをwに変更する (V_u = w)
+    def update_vertex_value(self, u: int, w: T):
+        """頂点uの値をwに変更する (V_u = w)
 
         Args:
             u (int): 頂点 (縮約前)
-            w (int): 変更値
+            w (T): 変更値
         """
-        self.bit.update(self._get_bit_index(u), w)
+        self.seg_tree1.update(self._get_seg_tree_index(u), w)
+        self.seg_tree2.update(self._get_seg_tree_index(u), w)
 
-    def vertex_sum_from_root(self, u: int) -> int:
-        """root -> u の頂点の重みの和を求める (root, uの重みも含む)
-
-        Args:
-            u (int): 頂点 (縮約前)
-
-        Returns:
-            int: root -> u の頂点の重みの和
-
-        TimeComplexity:
-            O((log N)^2)
-        """
-        s = 0
-
-        # uのheavy pathのheadからuまでの頂点の重みの和
-        heavy_u = self.heavy_node_mappings[u]
-        head_ind = self.heavy_node_start_on_bit[heavy_u]
-        heavy_u_ind = head_ind + self.depth_on_heavy_path[u] + 1
-        s += self.bit.sum_range(head_ind, heavy_u_ind)
-
-        while heavy_u != 0:
-            u = self.prev[self.heavy_node[heavy_u][0]]
-            heavy_u = self.heavy_node_mappings[u]
-            head_ind = self.heavy_node_start_on_bit[heavy_u]
-            heavy_u_ind = head_ind + self.depth_on_heavy_path[u] + 1
-            s += self.bit.sum_range(head_ind, heavy_u_ind)
-
-        return s
-
-    def vertex_sum(self, u: int, v: int) -> int:
-        """u -> v の頂点の重みの和を求める (u, vの重みも含む)
+    def vertex_aggregation_value(self, u: int, v: int) -> T:
+        """u -> v の頂点の値の集約値を求める (u, vの値も含む)
 
         Args:
             u (int): 頂点 (縮約前)
             v (int): 頂点 (縮約前)
 
         Returns:
-            int: u -> v の頂点の重みの和
+            T: u -> v の頂点の値の集約値
 
         TimeComplexity:
             O((log N)^2)
         """
+        s = self.seg_tree1.ide_ele
+
         lca = self.lowest_common_ancestor(u, v)
+        heavy_lca = self.heavy_node_mappings[lca]
 
-        dist_u = self.vertex_sum_from_root(u)
-        dist_v = self.vertex_sum_from_root(v)
-        dist_lca = self.vertex_sum_from_root(lca)
+        heavy_u = self.heavy_node_mappings[u]
+        heavy_v = self.heavy_node_mappings[v]
 
-        s = dist_u + dist_v - 2 * dist_lca + self.get_vertex_weight(lca)
+        # u -> lcaの集約値 (lcaを含まない)
+        while heavy_u != heavy_lca:
+            # u -> uが属するheadの頂点までの集約値
+            head_ind = self.heavy_node_start_on_seg_tree[heavy_u]
+            heavy_u_ind = head_ind + self.depth_on_heavy_path[u]
+            s = self.seg_tree1.segfunc(
+                s,
+                self.seg_tree2.query(head_ind, heavy_u_ind + 1)
+            )
+            u = self.prev[self.heavy_node[heavy_u][0]]
+            heavy_u = self.heavy_node_mappings[u]
+
+        if u != lca:
+            head_ind = self.heavy_node_start_on_seg_tree[heavy_u]
+            lca_ind = head_ind + self.depth_on_heavy_path[lca]
+            u_ind = head_ind + self.depth_on_heavy_path[u]
+            # lcaを含めない
+            s = self.seg_tree1.segfunc(
+                s,
+                self.seg_tree2.query(lca_ind + 1, u_ind + 1)
+            )
+
+        # lca -> vの集約値 (lcaを含む)
+        # 最初にv -> lcaの区間を求める
+        query_range = []
+        while heavy_v != heavy_lca:
+            head_ind = self.heavy_node_start_on_seg_tree[heavy_v]
+            heavy_v_ind = head_ind + self.depth_on_heavy_path[v]
+            query_range.append((head_ind, heavy_v_ind + 1))
+            v = self.prev[self.heavy_node[heavy_v][0]]
+            heavy_v = self.heavy_node_mappings[v]
+
+        head_ind = self.heavy_node_start_on_seg_tree[heavy_u]
+        lca_ind = head_ind + self.depth_on_heavy_path[lca]
+        v_ind = head_ind + self.depth_on_heavy_path[v]
+        query_range.append((lca_ind, v_ind + 1))
+
+        for left, right in reversed(query_range):
+            s = self.seg_tree1.segfunc(
+                s,
+                self.seg_tree1.query(left, right)
+            )
+
         return s
+
+
+def VertexSetPathComposite(
+    graph: AdjacencyList,
+    vertex_value: list[tuple[int, int]],
+    root: int = 0,
+    MOD: int = 1,
+) -> HeavyLightDecompositionOnSegmentTree[tuple[int, int]]:
+    """Vertex Set Path Composite
+
+    Args:
+        graph (AdjacencyList): 木
+        vertex_value (list[tuple[int, int]]): [a, b] -> f(x) = a * x + b
+        root (int, optional): 木の根. Defaults to 0.
+        MOD (int): MOD
+
+    Returns:
+        HeavyLightDecompositionOnSegmentTree[tuple[int, int]]: Vertex Set Path Composite
+    """
+    return HeavyLightDecompositionOnSegmentTree[tuple[int, int]](
+        graph=graph,
+        vertex_value=vertex_value,
+        segfunc=lambda x, y: ((y[0] * x[0]) % MOD, (y[0] * x[1] + y[1]) % MOD),
+        ide_ele=(1, 0),
+        root=root
+    )
