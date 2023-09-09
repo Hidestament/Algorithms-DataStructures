@@ -1,4 +1,5 @@
 from typing import Optional
+from array import array
 
 
 class BinaryIndexedTree:
@@ -6,7 +7,7 @@ class BinaryIndexedTree:
 
     Attributes:
         size (int): 配列の要素数
-        data (list): データを格納するBinary Indexed Tree. 1-indexedで扱う.
+        data (list[int]): データを格納するBinary Indexed Tree. 1-indexedで扱う.
 
     Methods:
         get(i): A[i], O(logN)
@@ -20,14 +21,17 @@ class BinaryIndexedTree:
         - 0-indexedで扱う (内部では1-indexedで扱う)
     """
 
-    def __init__(self, N: int = 10**6):
+    def __init__(self, A: list[int]):
         """Binary Indexed Tree
 
         Args:
-            N (int): 配列の要素数. Defaults to 10**6.
+            A (list[int]): 元の配列
         """
-        self.size = N + 1
-        self.tree = [0] * self.size
+        self.size = len(A) + 1
+        self.data = array("q", [0] * self.size)
+
+        for i, a in enumerate(A):
+            self.update(i, a)
 
     def __getitem__(self, i: int) -> int:
         """A[i]を取得.
@@ -75,8 +79,7 @@ class BinaryIndexedTree:
 
         i += 1
         while i < self.size:
-            # print(f"{i=}")
-            self.tree[i] += x
+            self.data[i] += x
             # 真上の位置は, iにiのLSBを加えたモノ
             i += i & -i
 
@@ -113,7 +116,7 @@ class BinaryIndexedTree:
         i = min(i, self.size - 1)
         s = 0
         while i > 0:
-            s += self.tree[i]
+            s += self.data[i]
             i -= i & -i
 
         return s
@@ -162,8 +165,8 @@ class BinaryIndexedTree:
         i = 0
         while length > 0:
             # 現在の区間を足してもxに届かない場合, その区間を加えて右の子へ
-            if (i + length < self.size) and self.tree[i + length] + s < x:
-                s += self.tree[i + length]
+            if (i + length < self.size) and self.data[i + length] + s < x:
+                s += self.data[i + length]
                 i += length
 
             # 1つ下の階層へ (区間は半分になる)

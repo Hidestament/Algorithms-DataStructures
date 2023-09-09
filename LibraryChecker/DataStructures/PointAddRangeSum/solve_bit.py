@@ -6,9 +6,7 @@ from src.DataStructures.RangeTree.binary_indexed_tree import BinaryIndexedTree
 N, Q = map(int, input().split())
 A = list(map(int, input().split()))
 
-bit = BinaryIndexedTree(N + 1)
-for i, a in enumerate(A):
-    bit.add(i, a)
+bit = BinaryIndexedTree(A)
 
 for _ in range(Q):
     q = list(map(int, input().split()))
