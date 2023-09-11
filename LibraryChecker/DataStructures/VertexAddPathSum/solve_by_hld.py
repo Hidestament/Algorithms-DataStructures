@@ -2,7 +2,7 @@
 
 import sys
 
-from src.DataStructures.Tree.heavy_light_decomposition_on_bit import HeavyLightDecompositionOnBIT
+from src.DataStructures.Graph.heavy_light_decomposition_on_bit import HeavyLightDecompositionOnBIT
 
 
 input = sys.stdin.readline

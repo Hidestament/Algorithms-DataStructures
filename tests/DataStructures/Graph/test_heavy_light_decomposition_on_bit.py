@@ -1,6 +1,6 @@
 from itertools import product
 
-from DataStructures.Tree.heavy_light_decomposition_on_bit import HeavyLightDecomposition
+from src.DataStructures.Graph.heavy_light_decomposition_on_bit import HeavyLightDecomposition
 
 
 def brute_force_sum_range(prev, weights, u, v, lca):

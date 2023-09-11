@@ -1,4 +1,4 @@
-from src.DataStructures.Tree.heavy_light_decomposition_on_seg_tree import HeavyLightDecompositionOnSegmentTree
+from src.DataStructures.Graph.heavy_light_decomposition_on_seg_tree import HeavyLightDecompositionOnSegmentTree
 
 
 def test_library_checker_case1():

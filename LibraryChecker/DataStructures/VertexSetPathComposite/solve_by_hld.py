@@ -2,7 +2,7 @@
 
 import sys
 
-from src.DataStructures.Tree.heavy_light_decomposition_on_seg_tree import VertexSetPathComposite
+from src.DataStructures.Graph.heavy_light_decomposition_on_seg_tree import VertexSetPathComposite
 
 
 input = sys.stdin.readline
