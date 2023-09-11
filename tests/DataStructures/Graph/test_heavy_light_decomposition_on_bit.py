@@ -1,6 +1,6 @@
 from itertools import product
 
-from src.DataStructures.Graph.heavy_light_decomposition_on_bit import HeavyLightDecomposition
+from src.DataStructures.Graph.heavy_light_decomposition_on_bit import HeavyLightDecompositionOnBIT
 
 
 def brute_force_sum_range(prev, weights, u, v, lca):
@@ -22,7 +22,7 @@ def test_sum_range():
     weights = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     prev = [None, 0, 1, 1, 0, 4, 5, 4, 0, 8]
 
-    hl = HeavyLightDecomposition(graph, weights)
+    hl = HeavyLightDecompositionOnBIT(graph, weights)
 
     for i, j in product(range(N), range(N)):
         lca = hl.lowest_common_ancestor(i, j)
