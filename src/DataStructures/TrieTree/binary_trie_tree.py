@@ -390,6 +390,14 @@ class BinaryTrie:
         self.discard(max_element)
         return max_element
 
+    # TODO: 実装
+    def next_value(self, lower: int) -> Optional[int]:
+        ...
+
+    # TODO: 実装
+    def prev_value(self, upper: int) -> Optional[int]:
+        ...
+
     def __len__(self) -> int:
         """要素数を返す
 

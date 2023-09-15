@@ -442,6 +442,7 @@ class WaveletMatrix:
             left, right, lower
         )
 
+    # TODO: 実装
     def range_list(self, left: int, right: int, lower: int, upper: int):
         """T[left..right)の中で, lower <= x < upperを満たすxを頻度とともに返す
 
