@@ -7,13 +7,17 @@
         "charliermarsh",
         "esbenp",
         "indegree",
+        "inorder",
         "njpwerner",
         "popleft",
+        "postorder",
+        "preorder",
         "pylance",
         "quantile",
         "segfunc",
         "SSSP",
-        "topk"
+        "topk",
+        "Treap"
     ],
     "files.autoSave": "afterDelay",
     "python.analysis.autoFormatStrings": true,
