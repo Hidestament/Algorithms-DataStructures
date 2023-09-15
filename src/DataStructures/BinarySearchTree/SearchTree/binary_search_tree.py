@@ -1,3 +1,5 @@
+# TODO: Merge, Split, Query, lower_boundの追加
+
 from typing import Optional, Generator
 from collections import deque
 

@@ -1,3 +1,5 @@
+# TODO: Merge, Split, Query, lower_boundの追加
+
 from typing import Optional, Generator, TypeVar, Generic
 from collections import deque
 from random import random
