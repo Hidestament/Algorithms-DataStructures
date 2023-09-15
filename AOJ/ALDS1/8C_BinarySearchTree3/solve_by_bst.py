@@ -2,7 +2,7 @@
 
 import sys
 
-from src.DataStructures.BinarySearchTree.binary_search_tree import BinarySearchTree
+from DataStructures.BinarySearchTree.SearchTree.binary_search_tree import BinarySearchTree
 
 
 input = sys.stdin.readline

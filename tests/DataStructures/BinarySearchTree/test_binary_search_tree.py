@@ -1,4 +1,4 @@
-from src.DataStructures.BinarySearchTree.binary_search_tree import BinarySearchTree
+from src.DataStructures.BinarySearchTree.SearchTree.binary_search_tree import BinarySearchTree
 
 
 def test_search():

@@ -1,8 +1,7 @@
 # https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/ALDS1_8_A/judge/8281815/PyPy3
 
 import sys
-
-from src.DataStructures.BinarySearchTree.binary_search_tree import BinarySearchTree
+from src.DataStructures.BinarySearchTree.SearchTree.binary_search_tree import BinarySearchTree
 
 
 input = sys.stdin.readline

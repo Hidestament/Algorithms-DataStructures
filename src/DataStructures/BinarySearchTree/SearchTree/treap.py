@@ -117,7 +117,7 @@ class Treap:
 
         Args:
             node (TreapNode): 回転させたい部分木の根
-            parent (TreapNode): nodeの親. Noneの場合はnodeが根であることを意味する
+            parent (Optional[TreapNode]): nodeの親. Noneの場合はnodeが根であることを意味する
 
         Returns:
             TreapNode: 回転後の部分木の根
@@ -147,7 +147,7 @@ class Treap:
 
         Args:
             node (TreapNode): 回転させたい部分木の根
-            parent (TreapNode): nodeの親. Noneの場合はnodeが根であることを意味する
+            parent (Optional[TreapNode]): nodeの親. Noneの場合はnodeが根であることを意味する
 
         Returns:
             TreapNode: 回転後の部分木の根
@@ -226,7 +226,6 @@ class Treap:
         Args:
             key (int): 挿入したい要素のkey. 重複を許す.
             num (int): 挿入したい要素の個数. Defaults to 1.
-            priority (Optional[float]): 挿入したい要素の優先度. Defaults to None.
         """
         if self.root is None:
             self.root = self._new_node(key, num)
@@ -306,7 +305,7 @@ class Treap:
         """rootを根とする部分木の最小要素を返す (pathも返す)
 
         Args:
-            root (Node): 根
+            root (TreapNode): 根
 
         Returns:
             list[TreapNode]: 最小要素に至る探索パス
@@ -332,7 +331,7 @@ class Treap:
         """rootを根とする部分木の最大要素を返す (pathも返す)
 
         Args:
-            root (Node): 根
+            root (TreapNode): 根
 
         Returns:
             list[TreapNode]: 最大要素に至る探索パス
