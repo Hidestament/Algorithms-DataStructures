@@ -1,4 +1,5 @@
 # https://judge.yosupo.jp/submission/161374
+# 平均的には辞書より遅いが, 変なケースでは辞書より速い (https://judge.yosupo.jp/submission/161376)
 # src/DataStructures/BinarySearchTree/test_treap_hashmap.pyを修正したもの
 
 import sys
