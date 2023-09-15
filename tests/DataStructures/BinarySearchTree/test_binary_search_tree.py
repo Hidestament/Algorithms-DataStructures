@@ -281,6 +281,200 @@ def test_kth_smallest_element():
         assert tree.kth_smallest_element(k).key == a
 
 
+def test_lower_bound():
+    tree = BinarySearchTree()
+    tree.insert(2)
+    assert tree.lower_bound(1).key == 2
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3) is None
+
+    tree.delete(2)
+    assert tree.lower_bound(0) is None
+
+    tree = BinarySearchTree()
+    tree.insert(-100000)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0) is None
+
+    tree.insert(2)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 2
+    assert tree.lower_bound(1).key == 2
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3) is None
+
+    tree.insert(2)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 2
+    assert tree.lower_bound(1).key == 2
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3) is None
+
+    tree.insert(2)
+    tree.insert(1)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3) is None
+
+    tree.insert(1)
+    tree.insert(100000)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 100000
+    assert tree.lower_bound(4).key == 100000
+    assert tree.lower_bound(10000000) is None
+
+    tree.insert(3)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 3
+    assert tree.lower_bound(4).key == 100000
+    assert tree.lower_bound(10000000) is None
+
+    tree.insert(6)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 3
+    assert tree.lower_bound(4).key == 6
+    assert tree.lower_bound(5).key == 6
+    assert tree.lower_bound(6).key == 6
+    assert tree.lower_bound(7).key == 100000
+    assert tree.lower_bound(10000000) is None
+
+    tree.insert(5)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 3
+    assert tree.lower_bound(4).key == 5
+    assert tree.lower_bound(5).key == 5
+    assert tree.lower_bound(6).key == 6
+    assert tree.lower_bound(7).key == 100000
+    assert tree.lower_bound(10000000) is None
+
+    tree.insert(7)
+    assert tree.lower_bound(-1000000000000).key == -100000
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 3
+    assert tree.lower_bound(4).key == 5
+    assert tree.lower_bound(5).key == 5
+    assert tree.lower_bound(6).key == 6
+    assert tree.lower_bound(7).key == 7
+    assert tree.lower_bound(10000000) is None
+
+
+def test_upper_bound():
+    tree = BinarySearchTree()
+    tree.insert(2)
+    assert tree.upper_bound(1) is None
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 2
+
+    tree.delete(2)
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1) is None
+    assert tree.upper_bound(2) is None
+    assert tree.upper_bound(3) is None
+
+    tree = BinarySearchTree()
+    tree.insert(100000)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(2)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1) is None
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 2
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(2)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1) is None
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 2
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(2)
+    tree.insert(1)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 2
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(1)
+
+    tree.insert(3)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 3
+    assert tree.upper_bound(4).key == 3
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(6)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 3
+    assert tree.upper_bound(4).key == 3
+    assert tree.upper_bound(5).key == 3
+    assert tree.upper_bound(6).key == 6
+    assert tree.upper_bound(7).key == 6
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(5)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 3
+    assert tree.upper_bound(4).key == 3
+    assert tree.upper_bound(5).key == 5
+    assert tree.upper_bound(6).key == 6
+    assert tree.upper_bound(7).key == 6
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+    tree.insert(7)
+    assert tree.upper_bound(-1000000000000) is None
+    assert tree.upper_bound(0) is None
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 3
+    assert tree.upper_bound(4).key == 3
+    assert tree.upper_bound(5).key == 5
+    assert tree.upper_bound(6).key == 6
+    assert tree.upper_bound(7).key == 7
+    assert tree.upper_bound(8).key == 7
+    assert tree.upper_bound(100000).key == 100000
+    assert tree.upper_bound(100001).key == 100000
+
+
 def test_AOJ_binary_search_tree_1():
     tree = BinarySearchTree()
     tree.insert(30)

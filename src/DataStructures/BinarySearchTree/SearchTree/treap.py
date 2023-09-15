@@ -1,4 +1,4 @@
-# TODO: Merge, Split, Query, lower_boundの追加
+# TODO: Merge, Split, Query追加
 
 from typing import Optional, Generator
 from collections import deque
@@ -54,6 +54,8 @@ class Treap:
         max_element(): 二分探索木の最大要素を返す
         successor(key: int): key=kの次節点を返す
         predecessor(key: int): key=kの前節点を返す
+        lower_bound(key: int): key <= x.key となる最小のxを返す
+        upper_bound(key: int): x.key <= key となる最大のxを返す
         kth_smallest_element(k: int): 二分探索木の中間順巡回でk番目に小さい要素を返す
         kth_largest_element(k: int): 二分探索木の中間順巡回でk番目に大きい要素を返す
         inorder(): 二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
@@ -424,6 +426,63 @@ class Treap:
                 return parent
 
         return None
+
+    def lower_bound(self, key: int) -> Optional[TreapNode]:
+        """key <= x.key となる最小のxを返す
+
+        Args:
+            key (int): lower
+
+        Returns:
+            Optional[TreapNode]: key <= x.key となる最小のx. 存在しない場合はNoneを返す
+        """
+        if self.root is None:
+            return None
+
+        # 最小値なので, 基本的に左に進む
+        node = self.root
+        # 条件を満たす最小node
+        minimum = None
+        while node is not None:
+            if node.key == key:
+                return node
+            elif node.key < key:
+                node = node.right
+            else:
+                if (minimum is None) or (node.key < minimum.key):
+                    minimum = node
+
+                node = node.left
+
+        return minimum
+
+    def upper_bound(self, key: int) -> Optional[TreapNode]:
+        """x.key <= keyとなる最大のxを返す
+
+        Args:
+            key (int): lower
+
+        Returns:
+            Optional[TreapNode]: x.key <= keyとなる最大のx. 存在しない場合はNoneを返す
+        """
+        if self.root is None:
+            return None
+
+        # 最大値なので, 基本的に右に進む
+        node = self.root
+        # 条件を満たす最大のnode
+        maximum = None
+        while node is not None:
+            if node.key == key:
+                return node
+            elif node.key > key:
+                node = node.left
+            else:
+                if (maximum is None) or (maximum.key < node.key):
+                    maximum = node
+                node = node.right
+
+        return maximum
 
     def kth_smallest_element(self, k: int) -> Optional[TreapNode]:
         """二分探索木の中間順巡回でk番目に小さい要素を返す
