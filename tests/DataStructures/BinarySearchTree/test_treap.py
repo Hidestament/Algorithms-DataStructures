@@ -1,8 +1,11 @@
-from src.DataStructures.BinarySearchTree.binary_search_tree import BinarySearchTree
+import random
+from src.DataStructures.BinarySearchTree.treap import Treap
+
+random.seed(1234)
 
 
 def test_search():
-    tree = BinarySearchTree()
+    tree = Treap()
 
     tree.insert(2)
     assert len(tree) == 1
@@ -49,7 +52,7 @@ def test_search():
 
 
 def test_count():
-    tree = BinarySearchTree()
+    tree = Treap()
 
     tree.insert(2)
     tree.insert(1)
@@ -70,7 +73,7 @@ def test_count():
 
 
 def test_min_element():
-    tree = BinarySearchTree()
+    tree = Treap()
 
     assert tree.min_element() is None
 
@@ -103,7 +106,7 @@ def test_min_element():
 
 
 def test_max_element():
-    tree = BinarySearchTree()
+    tree = Treap()
 
     assert tree.max_element() is None
 
@@ -123,7 +126,7 @@ def test_max_element():
 
 
 def test_successor():
-    tree = BinarySearchTree()
+    tree = Treap()
     assert tree.successor(1) is None
 
     tree.insert(100000)
@@ -149,7 +152,7 @@ def test_successor():
 
 
 def test_predecessor():
-    tree = BinarySearchTree()
+    tree = Treap()
     assert tree.predecessor(1) is None
 
     tree.insert(-100000)
@@ -176,7 +179,7 @@ def test_predecessor():
 
 
 def test_inorder():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(-100000)
     tree.insert(2)
     tree.insert(1)
@@ -192,7 +195,13 @@ def test_inorder():
 
 
 def test_delete():
-    tree = BinarySearchTree()
+    tree = Treap()
+    tree.insert(2)
+    tree.delete(2)
+    assert tree.root is None
+    assert [i.key for i in tree.inorder()] == []
+
+    tree = Treap()
     tree.insert(-100000)
     tree.insert(2)
     tree.insert(2)
@@ -204,57 +213,58 @@ def test_delete():
     tree.insert(6)
     tree.insert(5)
     tree.insert(7)
-    assert len(tree) == 11
 
-    # A = [1, 1, 2, 2, 2, 3, 5, 6, 7, 10000]
+    # [1, 1, 2, 2, 2, 3, 5, 6, 7, 10000]
     tree.delete(-100000)
     assert tree.search(-100000) is None
-    assert len(tree) == 10
+    assert [i.key for i in tree.inorder()] == [1, 2, 3, 5, 6, 7, 100000]
 
-    # A = [1, 1, 2, 2, 2, 3, 5, 6, 7]
+    # [1, 1, 2, 2, 2, 3, 5, 6, 7]
     tree.delete(100000)
     assert tree.search(100000) is None
-    assert len(tree) == 9
+    assert [i.key for i in tree.inorder()] == [1, 2, 3, 5, 6, 7]
 
-    # A = [2, 2, 2, 3, 5, 6, 7]
+    # [2, 2, 2, 3, 5, 6, 7]
     tree.delete(1, 2)
     assert tree.search(1) is None
-    assert len(tree) == 7
+    assert [i.key for i in tree.inorder()] == [2, 3, 5, 6, 7]
 
-    # A = [2, 2, 3, 5, 6, 7]
+    # [2, 2, 3, 5, 6, 7]
     tree.delete(2, 1)
     assert tree.search(2).key == 2
     assert tree.search(2).count == 2
-    assert len(tree) == 6
+    assert [i.key for i in tree.inorder()] == [2, 3, 5, 6, 7]
 
-    # A = [2, 2, 5, 6, 7]
+    # [2, 5, 6, 7]
     tree.delete(3)
     assert tree.search(3) is None
-    assert len(tree) == 5
+    assert [i.key for i in tree.inorder()] == [2, 5, 6, 7]
 
-    # A = [2, 2, 6, 7]
     tree.delete(4)
+    assert [i.key for i in tree.inorder()] == [2, 5, 6, 7]
+
+    # [2, 6, 7]
     tree.delete(5)
     assert tree.delete(5) is None
-    assert len(tree) == 4
+    assert [i.key for i in tree.inorder()] == [2, 6, 7]
 
-    # A = [2, 2, 7]
+    # [2, 7]
     tree.delete(6)
     assert tree.search(6) is None
-    assert len(tree) == 3
+    assert [i.key for i in tree.inorder()] == [2, 7]
 
-    # A = [2, 2]
+    # [2]
     tree.delete(7)
     assert tree.search(7) is None
-    assert len(tree) == 2
+    assert [i.key for i in tree.inorder()] == [2]
 
     tree.delete(8)
     assert tree.delete(8) is None
-    assert len(tree) == 2
+    assert [i.key for i in tree.inorder()] == [2]
 
 
 def test_kth_smallest_element():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(-100000)
     tree.insert(2)
     tree.insert(2)
@@ -276,13 +286,18 @@ def test_kth_smallest_element():
     tree.delete(2, 3)
     tree.delete(1, 1)
     tree.delete(100000)
+
+    assert [node.key for node in tree.inorder()] == [-100000, 1, 3, 5, 6, 7]
+
+    print(f"{tree.root=}")
+
     A = [-100000, 1, 3, 5, 6, 7]
     for k, a in enumerate(A, start=1):
         assert tree.kth_smallest_element(k).key == a
 
 
 def test_AOJ_binary_search_tree_1():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(30)
     tree.insert(88)
     tree.insert(12)
@@ -292,11 +307,10 @@ def test_AOJ_binary_search_tree_1():
     tree.insert(25)
 
     assert [node.key for node in tree.inorder()] == [1, 12, 17, 20, 25, 30, 88]
-    assert [node.key for node in tree.preorder()] == [30, 12, 1, 20, 17, 25, 88]
 
 
 def test_AOJ_binary_search_tree_2():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(30)
     tree.insert(88)
     tree.insert(12)
@@ -311,11 +325,10 @@ def test_AOJ_binary_search_tree_2():
     assert 16 not in tree
 
     assert [node.key for node in tree.inorder()] == [1, 12, 17, 20, 25, 30, 88]
-    assert [node.key for node in tree.preorder()] == [30, 12, 1, 20, 17, 25, 88]
 
 
 def test_AOJ_binary_search_tree_3():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(8)
     tree.insert(2)
     tree.insert(3)
@@ -335,17 +348,15 @@ def test_AOJ_binary_search_tree_3():
     assert 8 in tree
 
     assert [node.key for node in tree.inorder()] == [1, 2, 3, 7, 8, 22]
-    assert [node.key for node in tree.preorder()] == [8, 2, 1, 3, 7, 22]
 
     tree.delete(3)
     tree.delete(7)
 
     assert [node.key for node in tree.inorder()] == [1, 2, 8, 22]
-    assert [node.key for node in tree.preorder()] == [8, 2, 1, 22]
 
 
 def test_AOJ_binary_search_tree_3_case3():
-    tree = BinarySearchTree()
+    tree = Treap()
     tree.insert(30)
     tree.insert(17)
     tree.insert(88)
@@ -357,7 +368,6 @@ def test_AOJ_binary_search_tree_3_case3():
     tree.insert(27)
     tree.insert(60)
     assert [node.key for node in tree.inorder()] == [5, 17, 18, 20, 27, 28, 30, 53, 60, 88]
-    assert [node.key for node in tree.preorder()] == [30, 17, 5, 20, 18, 28, 27, 88, 53, 60]
 
     assert -1 not in tree
     assert 2 not in tree
@@ -396,7 +406,6 @@ def test_AOJ_binary_search_tree_3_case3():
     tree.insert(-1)
     tree.insert(8)
     assert [node.key for node in tree.inorder()] == [-1, 5, 8, 17, 18, 20, 27, 28, 30, 53, 55, 60, 63, 88, 2000000000]
-    assert [node.key for node in tree.preorder()] == [30, 17, 5, -1, 8, 20, 18, 28, 27, 88, 53, 60, 55, 63, 2000000000]
 
     tree.delete(53)
     tree.delete(2000000000)
@@ -405,4 +414,28 @@ def test_AOJ_binary_search_tree_3_case3():
     tree.delete(5)
     tree.delete(8)
     assert [node.key for node in tree.inorder()] == [-1, 17, 18, 27, 28, 30, 55, 60, 63, 88]
-    assert [node.key for node in tree.preorder()] == [30, 17, -1, 27, 18, 28, 88, 60, 55, 63]
+
+
+def test_AOJ_heap_test_case():
+    tree = Treap()
+
+    tree.insert(35)
+    tree.insert(3)
+    tree.insert(1)
+    tree.insert(14)
+    tree.insert(80)
+    tree.insert(42)
+    tree.insert(86)
+    tree.insert(21)
+    tree.insert(7)
+    tree.insert(6)
+
+    assert [node.key for node in tree.inorder()] == [1, 3, 6, 7, 14, 21, 35, 42, 80, 86]
+
+    assert 21 in tree
+    assert 22 not in tree
+
+    tree.delete(35)
+    tree.delete(99)
+
+    assert [node.key for node in tree.inorder()] == [1, 3, 6, 7, 14, 21, 42, 80, 86]

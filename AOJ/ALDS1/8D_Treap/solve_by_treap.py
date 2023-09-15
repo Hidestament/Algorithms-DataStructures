@@ -1,44 +1,50 @@
+# https://onlinejudge.u-aizu.ac.jp/status/users/hidexchan/submissions/1/ALDS1_8_D/judge/8286534/PyPy3
+# src/DataStructures/BinarySearchTree/treap.pyを修正したもの
+
+import sys
 from typing import Optional, Generator
 from collections import deque
 
 
-class Node:
-    """二分探索木のノード
+class TreapNode:
+    """Treapのノード
 
     Attributes:
         key (int): 二分探索木のノードに格納される要素のkey
-        left (Optional[Node]): 二分探索木のノードの左の子
-        right (Optional[Node]): 二分探索木のノードの右の子
+        left (Optional[TreapNode]): 二分探索木のノードの左の子
+        right (Optional[TreapNode]): 二分探索木のノードの右の子
         count (int): このノードの個数 (多重集合の場合)
         subtree_size (int): このノードを根とする部分木の要素数
+        priority (float): このノードの優先度
 
     Note:
         data(value)は載せてない
     """
 
-    def __init__(self, key: int, count: int = 1):
+    def __init__(self, key: int, priority: int, count: int = 1):
         self.key = key
-        self.left: Optional[Node] = None
-        self.right: Optional[Node] = None
+        self.left: Optional[TreapNode] = None
+        self.right: Optional[TreapNode] = None
         self.count = count
         self.subtree_size = count
+        self.priority = priority
 
     def _update(self):
-        """このノードを根とする部分木の要素数を更新する
+        """このノードを根とする部分木の要素数を更新する (親は更新しない)
         """
         left_size = self.left.subtree_size if self.left is not None else 0
         right_size = self.right.subtree_size if self.right is not None else 0
         self.subtree_size = left_size + right_size + self.count
 
     def __repr__(self) -> str:
-        return f"Node(key={self.key}, count={self.count})"
+        return f"TreapNode(key={self.key}, priority={self.priority}, count={self.count})"
 
 
-class BinarySearchTree:
-    """基本的な二分探索木. 最悪計算時間は全てO(n)
+class Treap:
+    """Tree + Heap, 乱択アルゴリズムを用いた平衡二分探索木. 計算時間の期待値は全てO(log N)
 
     Attributes:
-        root (Optional[Node]): 二分探索木の根
+        root (Optional[TreapNode]): 二分探索木の根
 
     Methods:
         search(key: int): 存在するならば二分探索木に要素k(key kを持つ要素)を返す
@@ -53,6 +59,9 @@ class BinarySearchTree:
         kth_largest_element(k: int): 二分探索木の中間順巡回でk番目に大きい要素を返す
         inorder(): 二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
         preorder(): 二分探索木の先行順巡回 (二分探索木の要素を出力する)
+
+    Notes:
+        ヒープ条件: 親のpriority >= 子のpriority
     """
 
     def __init__(self):
@@ -68,26 +77,111 @@ class BinarySearchTree:
         """
         return self.root.subtree_size if self.root is not None else 0
 
-    def _new_node(self, key: int, count: int = 1) -> Node:
-        return Node(key, count)
+    def _new_node(
+        self,
+        key: int,
+        priority: int,
+        count: int = 1,
+    ) -> TreapNode:
+        return TreapNode(key, priority, count)
 
-    def _update(self, path: list[Node]):
-        """pathの各ノードの部分木の要素数を更新する
+    def _update(self, path: list[TreapNode]):
+        """node -> root上の各頂点の情報を更新
 
         Args:
-            path (list[Node]): 更新したいノードのリスト. 根からのパスになっている必要がある
+            path (list[TreapNode]): [root ... -> ... node]
         """
         for node in reversed(path):
             node._update()
 
-    def _search_with_path(self, key: int) -> list[Node]:
+    def _rotate_and_update(self, path: list[TreapNode]):
+        """node -> root上の各頂点の情報を更新 & ヒープ条件が満たされるように回転させる
+
+        Args:
+            path (list[TreapNode]): [root ... -> ... node]
+        """
+        assert len(path) >= 1
+
+        _path = path[::-1] + [None]
+        for node, parent in zip(_path, _path[1:]):
+            node._update()
+
+            left_priority = node.left.priority if node.left is not None else -float("inf")
+            right_priority = node.right.priority if node.right is not None else -float("inf")
+
+            # 右回転
+            if node.priority < left_priority:
+                self._rotate_right(node, parent)
+            # 左回転
+            elif node.priority < right_priority:
+                self._rotate_left(node, parent)
+
+    def _rotate_right(self, node: TreapNode, parent: Optional[TreapNode]) -> TreapNode:
+        """nodeを根とする部分木を右回転させる
+
+        Args:
+            node (TreapNode): 回転させたい部分木の根
+            parent (TreapNode): nodeの親. Noneの場合はnodeが根であることを意味する
+
+        Returns:
+            TreapNode: 回転後の部分木の根
+
+        Notes:
+            nodeの左の子が存在することを前提とする
+        """
+        assert node.left
+
+        new_root = node.left
+        node.left = new_root.right
+        new_root.right = node
+
+        if parent is None:
+            self.root = new_root
+        elif parent.key < node.key:
+            parent.right = new_root
+        else:
+            parent.left = new_root
+
+        node._update()
+        new_root._update()
+        return new_root
+
+    def _rotate_left(self, node: TreapNode, parent: Optional[TreapNode]) -> TreapNode:
+        """nodeを根とする部分木を左回転させる
+
+        Args:
+            node (TreapNode): 回転させたい部分木の根
+            parent (TreapNode): nodeの親. Noneの場合はnodeが根であることを意味する
+
+        Returns:
+            TreapNode: 回転後の部分木の根
+
+        Notes:
+            nodeの右の子が存在することを前提とする
+        """
+        new_root = node.right
+        node.right = new_root.left
+        new_root.left = node
+
+        if parent is None:
+            self.root = new_root
+        elif parent.key < node.key:
+            parent.right = new_root
+        else:
+            parent.left = new_root
+
+        node._update()
+        new_root._update()
+        return new_root
+
+    def _search_with_path(self, key: int) -> list[TreapNode]:
         """keyを持つ要素を二分探索木から探索する (探索パスを返す)
 
         Args:
             key (int): 探索したい要素のkey
 
         Returns:
-            list[Node]: 探索パス
+            list[TreapNode]: 探索パス
         """
         if self.root is None:
             return []
@@ -104,23 +198,19 @@ class BinarySearchTree:
                 node = node.left
         return path
 
-    def search(self, key: int) -> Optional[Node]:
+    def search(self, key: int) -> Optional[TreapNode]:
         """keyを持つ要素を二分探索木から探索する
 
         Args:
             key (int): 探索したい要素のkey
 
         Returns:
-            Optional[Node]: keyを持つ要素が存在すればその要素を返す. 存在しなければNoneを返す
+            Optional[TreapNode]: keyを持つ要素が存在すればその要素を返す. 存在しなければNoneを返す
         """
         if self.root is None:
             return None
-
-        path = self._search_with_path(key)
-        if path and path[-1].key != key:
-            return None
-
-        return path[-1]
+        node = self._search_with_path(key)[-1]
+        return node if node.key == key else None
 
     def count(self, key: int) -> int:
         """二分探索木に含まれるkeyの個数を返す
@@ -134,32 +224,34 @@ class BinarySearchTree:
         node = self.search(key)
         return node.count if node is not None else 0
 
-    def insert(self, key: int, num: int = 1):
+    def insert(self, key: int, num: int = 1, priority: Optional[float] = None):
         """二分探索木に要素を挿入する
 
         Args:
             key (int): 挿入したい要素のkey. 重複を許す.
             num (int): 挿入したい要素の個数. Defaults to 1.
+            priority (Optional[float]): 挿入したい要素の優先度. Defaults to None.
         """
         if self.root is None:
-            self.root = self._new_node(key, num)
+            self.root = self._new_node(key, priority, num)
             return
 
         path = self._search_with_path(key)
         node = path[-1]
 
-        # keyが存在する場合
-        if node.key == key:
-            node.count += num
         # keyが存在しない場合
-        else:
+        if node.key != key:
             parent = node
+            node = self._new_node(key, priority, num)
+            path.append(node)
             if parent.key < key:
-                parent.right = self._new_node(key, num)
+                parent.right = node
             else:
-                parent.left = self._new_node(key, num)
+                parent.left = node
+        else:
+            node.count += num
 
-        self._update(path)
+        self._rotate_and_update(path)
 
     def delete(self, key: int, num: int = 1):
         """二分探索木から要素を削除する
@@ -173,7 +265,6 @@ class BinarySearchTree:
 
         path = self._search_with_path(key)
         node = path[-1]
-        parent = path[-2] if len(path) >= 2 else None
 
         # keyが存在しない場合
         if node.key != key:
@@ -186,113 +277,95 @@ class BinarySearchTree:
             self._update(path)
             return
 
-        # nodeが1つ以下の子を持つ場合
-        if (node.left is None) or (node.right is None):
-            child = node.left if node.left is not None else node.right
-            # rootの場合
-            if parent is None:
-                self.root = child
-            # parentの右の子の場合
-            elif parent.key < key:
-                parent.right = child
-            # parentの左の子の場合
+        path.pop()
+        parent = path[-1] if len(path) >= 1 else None
+        # 子が1つ以下になるまで回転
+        while (node.left is not None) or (node.right is not None):
+            left_priority = node.left.priority if node.left is not None else -float("inf")
+            right_priority = node.right.priority if node.right is not None else -float("inf")
+
+            # 子のうち, priorityが高い方に回転する
+            if left_priority > right_priority:
+                parent = self._rotate_right(node, parent)
             else:
-                parent.left = child
+                parent = self._rotate_left(node, parent)
 
-            # node自体は更新しなくて良い
-            self._update(path[:-1])
+            if parent is not None:
+                path.append(parent)
 
-            del node
-            return
-
-        # nodeが2つの子を持つ場合
-        # nodeとnodeの次節点をswap -> nodeの削除
-        successor_path = self._min_element_with_path(node.right)
-
-        successor = successor_path[-1]
-        successor_parent = successor_path[-2] if len(successor_path) >= 2 else node
-
-        # successor_path = [R, ...., successor_parent, successor]
-        if successor_parent.left is successor:
-            successor_parent.left = successor.right
-        else:
-            successor_parent.right = successor.right
-
-        successor.right = node.right
-        successor.left = node.left
-
+        # 削除
         if parent is None:
-            self.root = successor
-        elif parent.key < key:
-            parent.right = successor
+            self.root = None
+        elif parent.left is node:
+            parent.left = None
         else:
-            parent.left = successor
-
-        # root -> ... -> parent -> successor -> R -> ... -> successor_parentまでを更新
-        self._update(path[:-1] + [successor] + successor_path[:-1])
+            parent.right = None
 
         del node
 
-    def _min_element_with_path(self, root: Node) -> list[Node]:
-        """rootを根とする部分木の最小要素を返す (探索パスを返す)
+        self._update(path)
+        return
+
+    def _min_element_with_parent(self, root: TreapNode) -> list[TreapNode]:
+        """rootを根とする部分木の最小要素を返す (pathも返す)
 
         Args:
             root (Node): 根
 
         Returns:
-            list[Node]: 最小要素に至る探索パス
+            list[TreapNode]: 最小要素に至る探索パス
         """
-        path = []
         node = root
+        path = []
         while node is not None:
             path.append(node)
             node = node.left
         return path
 
-    def min_element(self) -> Optional[Node]:
+    def min_element(self) -> Optional[TreapNode]:
         """二分探索木の最小要素を返す
 
         Returns:
-            Optional[Node]: 二分探索木の最小要素. 二分探索木が空ならばNoneを返す
+            Optional[TreapNode]: 二分探索木の最小要素. 二分探索木が空ならばNoneを返す
         """
         if self.root is None:
             return None
-        return self._min_element_with_path(self.root)[-1]
+        return self._min_element_with_parent(self.root)[-1]
 
-    def _max_element_with_path(self, root: Node) -> list[Node]:
-        """rootを根とする部分木の最大要素を返す (探索パスを返す)
+    def _max_element_with_parent(self, root: TreapNode) -> list[TreapNode]:
+        """rootを根とする部分木の最大要素を返す (pathも返す)
 
         Args:
             root (Node): 根
 
         Returns:
-            list[Node]: 最大要素に至る探索パス
+            list[TreapNode]: 最大要素に至る探索パス
         """
-        path = []
         node = root
+        path = []
         while node is not None:
             path.append(node)
             node = node.right
         return path
 
-    def max_element(self) -> Optional[Node]:
+    def max_element(self) -> Optional[TreapNode]:
         """二分探索木の最大要素を返す
 
         Returns:
-            Optional[Node]: 二分探索木の最大要素. 二分探索木が空ならばNoneを返す
+            Optional[TreapNode]: 二分探索木の最大要素. 二分探索木が空ならばNoneを返す
         """
         if self.root is None:
             return None
-        return self._max_element_with_path(self.root)[-1]
+        return self._max_element_with_parent(self.root)[-1]
 
-    def successor(self, key: int) -> Optional[Node]:
+    def successor(self, key: int) -> Optional[TreapNode]:
         """keyの次節点を返す
 
         Args:
             key (int): 検索したいkey
 
         Returns:
-            Optional[Node]: key < x となる最小の要素x. keyが存在しない場合 or keyの次節点が存在しない場合はNoneを返す
+            Optional[TreapNode]: key < x となる最小の要素x. keyが存在しない場合 or keyの次節点が存在しない場合はNoneを返す
         """
         if self.root is None:
             return None
@@ -306,28 +379,28 @@ class BinarySearchTree:
 
         # 右の子が存在する場合
         if node.right is not None:
-            return self._min_element_with_path(node.right)[-1]
+            return self._min_element_with_parent(node.right)[-1]
 
-        # root = key ^ 右の子が存在しない場合
+        # nodeがrootだった場合
         if len(path) == 1:
             return None
 
-        path = path[::-1]
         # nodeがparentの左の子である場合 -> parentがnodeの次節点
-        for node, parent in zip(path, path[1:]):
+        _path = path[::-1]
+        for node, parent in zip(_path, _path[1:]):
             if parent.left is node:
                 return parent
 
         return None
 
-    def predecessor(self, key: int) -> Optional[Node]:
+    def predecessor(self, key: int) -> Optional[TreapNode]:
         """keyの前節点を返す
 
         Args:
             key (int): 検索したいkey
 
         Returns:
-            Optional[Node]: key > x となる最大の要素x. keyが存在しない場合 or keyの前節点が存在しない場合はNoneを返す
+            Optional[TreapNode]: key > x となる最大の要素x. keyが存在しない場合 or keyの前節点が存在しない場合はNoneを返す
         """
         if self.root is None:
             return None
@@ -341,28 +414,28 @@ class BinarySearchTree:
 
         # 左の子が存在する場合は左の子の最大要素が前節点
         if node.left is not None:
-            return self._max_element_with_path(node.left)[-1]
+            return self._max_element_with_parent(node.left)[-1]
 
-        # root = key ^ 左の子が存在しない場合
+        # nodeがrootだった場合
         if len(path) == 1:
             return None
 
-        path = path[::-1]
         # nodeがparentの右の子である場合 -> parentがnodeの前節点
-        for node, parent in zip(path, path[1:]):
+        _path = path[::-1]
+        for node, parent in zip(_path, _path[1:]):
             if parent.right is node:
                 return parent
 
         return None
 
-    def kth_smallest_element(self, k: int) -> Optional[Node]:
+    def kth_smallest_element(self, k: int) -> Optional[TreapNode]:
         """二分探索木の中間順巡回でk番目に小さい要素を返す
 
         Args:
             k (int): k番目に小さい要素 (kは1-indexed)
 
         Returns:
-            Optional[Node]: 二分探索木の中間順巡回でk番目に小さい要素. 存在しない場合はNoneを返す
+            Optional[TreapNode]: 二分探索木の中間順巡回でk番目に小さい要素. 存在しない場合はNoneを返す
         """
         if len(self) < k:
             return None
@@ -383,14 +456,14 @@ class BinarySearchTree:
 
         return None
 
-    def kth_largest_element(self, k: int) -> Optional[Node]:
+    def kth_largest_element(self, k: int) -> Optional[TreapNode]:
         """二分探索木の中間順巡回でk番目に大きい要素を返す
 
         Args:
             k (int): k番目に大きい要素 (kは1-indexed)
 
         Returns:
-            Optional[Node]: 二分探索木の中間順巡回でk番目に大きい要素. 存在しない場合はNoneを返す
+            Optional[TreapNode]: 二分探索木の中間順巡回でk番目に大きい要素. 存在しない場合はNoneを返す
         """
         if len(self) < k:
             return None
@@ -407,11 +480,11 @@ class BinarySearchTree:
         """
         return True if self.search(key) is not None else False
 
-    def inorder(self) -> Generator[Node, None, None]:
+    def inorder(self) -> Generator[TreapNode, None, None]:
         """二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
 
         Yields:
-            Generator[Node, None, None]: 二分探索木の中間順巡回で得られる要素
+            Generator[TreapNode, None, None]: 二分探索木の中間順巡回で得られる要素
         """
         if self.root is None:
             return
@@ -435,11 +508,11 @@ class BinarySearchTree:
             if node.left is not None:
                 dq.append([node.left, False])
 
-    def preorder(self) -> Generator[Node, None, None]:
+    def preorder(self) -> Generator[TreapNode, None, None]:
         """二分探索木の先行順巡回 (二分探索木の要素を出力する)
 
         Yields:
-            Generator[Node, None, None]: 二分探索木の先行順巡回で得られる要素
+            Generator[TreapNode, None, None]: 二分探索木の先行順巡回で得られる要素
         """
         if self.root is None:
             return
@@ -456,3 +529,28 @@ class BinarySearchTree:
             # 先に右の子を追加しておく
             dq.append(node.right)
             dq.append(node.left)
+
+
+input = sys.stdin.readline
+
+
+tree = Treap()
+Q = int(input())
+for _ in range(Q):
+    query = list(map(str, input().split()))
+    if query[0] == "insert":
+        x, p = int(query[1]), int(query[2])
+        tree.insert(x, priority=p)
+    elif query[0] == "find":
+        x = int(query[1])
+        print("yes" if x in tree else "no")
+    elif query[0] == "delete":
+        x = int(query[1])
+        tree.delete(x)
+    else:
+        for node in tree.inorder():
+            print(f" {node.key}", end="")
+        print()
+        for node in tree.preorder():
+            print(f" {node.key}", end="")
+        print()
