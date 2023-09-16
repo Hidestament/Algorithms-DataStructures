@@ -1,5 +1,3 @@
-# TODO: Merge, Split, Queryの追加
-
 from typing import Optional, Generator, TypeVar, Generic
 from collections import deque
 from random import random

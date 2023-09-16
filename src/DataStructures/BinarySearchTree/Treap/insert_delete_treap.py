@@ -1,5 +1,3 @@
-# TODO: Merge, Split, Query追加
-
 from typing import Optional, Generator
 from collections import deque
 from random import random
@@ -40,7 +38,7 @@ class TreapNode:
 
 
 class Treap:
-    """Tree + Heap, 乱択アルゴリズムを用いた平衡二分探索木. 計算時間の期待値は全てO(log N)
+    """基本的なTreap (非再帰, Insert/Delete Based). 計算時間の期待値は全てO(log N)
 
     Attributes:
         root (Optional[TreapNode]): 二分探索木の根
@@ -78,11 +76,7 @@ class Treap:
         """
         return self.root.subtree_size if self.root is not None else 0
 
-    def _new_node(
-        self,
-        key: int,
-        count: int = 1,
-    ) -> TreapNode:
+    def _new_node(self, key: int, count: int = 1) -> TreapNode:
         return TreapNode(key, count)
 
     def _update(self, path: list[TreapNode]):
@@ -256,7 +250,7 @@ class Treap:
         """二分探索木から要素を削除する
 
         Args:
-            key (int): 削除したい要素のkey
+            key (int): 削除したい要素のkey, Noneはmerge, splitのためのダミー
             num (int): 削除したい要素の個数. Defaults to 1.
         """
         if self.root is None:

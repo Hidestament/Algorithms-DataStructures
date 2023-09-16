@@ -1,4 +1,4 @@
-from src.DataStructures.BinarySearchTree.HashMap.treap_hash_map import TreapHashMap
+from src.DataStructures.BinarySearchTree.Treap.treap_hash_map import TreapHashMap
 
 
 def test_library_checker_case():

@@ -1,5 +1,5 @@
 import random
-from src.DataStructures.BinarySearchTree.SearchTree.treap import Treap
+from src.DataStructures.BinarySearchTree.Treap.insert_delete_treap import Treap
 
 random.seed(1234)
 
