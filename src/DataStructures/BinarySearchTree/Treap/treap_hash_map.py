@@ -66,10 +66,8 @@ class TreapHashMap(Generic[K, V]):
         delete(key: K): 二分探索木から要素k(key kを持つ要素)を削除する
         min_element(): 二分探索木の最小要素を返す
         max_element(): 二分探索木の最大要素を返す
-        successor(key: K): key=kの次節点を返す
-        predecessor(key: K): key=kの前節点を返す
-        lower_bound(key: int): key <= x.key となる最小のxを返す
-        upper_bound(key: int): x.key <= key となる最大のxを返す
+        lower_bound(key: K): key <= x.key となる最小のxを返す
+        upper_bound(key: K): x.key <= key となる最大のxを返す
         kth_smallest_element(k: int): 二分探索木の中間順巡回でk番目に小さい要素を返す
         kth_largest_element(k: int): 二分探索木の中間順巡回でk番目に大きい要素を返す
         inorder(): 二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
@@ -396,76 +394,6 @@ class TreapHashMap(Generic[K, V]):
         if self.root is None:
             return None
         return self._max_element_with_parent(self.root)[-1]
-
-    def successor(self, key: K) -> Optional[TreapNode[K, V]]:
-        """keyの次節点を返す
-
-        Args:
-            key (K): 検索したいkey
-
-        Returns:
-            Optional[TreapNode[K, V]]: key < x となる最小の要素x. keyが存在しない場合 or keyの次節点が存在しない場合はNoneを返す
-        """
-        if self.root is None:
-            return None
-
-        path = self._search_with_path(key)
-        node = path[-1]
-
-        # keyが存在しない場合
-        if node.key != key:
-            return None
-
-        # 右の子が存在する場合
-        if node.right is not None:
-            return self._min_element_with_parent(node.right)[-1]
-
-        # nodeがrootだった場合
-        if len(path) == 1:
-            return None
-
-        # nodeがparentの左の子である場合 -> parentがnodeの次節点
-        _path = path[::-1]
-        for node, parent in zip(_path, _path[1:]):
-            if parent.left is node:
-                return parent
-
-        return None
-
-    def predecessor(self, key: K) -> Optional[TreapNode[K, V]]:
-        """keyの前節点を返す
-
-        Args:
-            key (K): 検索したいkey
-
-        Returns:
-            Optional[TreapNode[K, V]]: key > x となる最大の要素x. keyが存在しない場合 or keyの前節点が存在しない場合はNoneを返す
-        """
-        if self.root is None:
-            return None
-
-        path = self._search_with_path(key)
-        node = path[-1]
-
-        # keyが存在しない場合
-        if node.key != key:
-            return None
-
-        # 左の子が存在する場合は左の子の最大要素が前節点
-        if node.left is not None:
-            return self._max_element_with_parent(node.left)[-1]
-
-        # nodeがrootだった場合
-        if len(path) == 1:
-            return None
-
-        # nodeがparentの右の子である場合 -> parentがnodeの前節点
-        _path = path[::-1]
-        for node, parent in zip(_path, _path[1:]):
-            if parent.right is node:
-                return parent
-
-        return None
 
     def lower_bound(self, key: K) -> Optional[TreapNode[K, V]]:
         """key <= x.key となる最小のxを返す

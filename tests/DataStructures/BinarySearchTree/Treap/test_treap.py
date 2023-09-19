@@ -125,12 +125,14 @@ def test_max_element():
     assert tree.max_element().count == 1
 
 
-def test_successor():
+def test_lower_bound():
     tree = Treap()
-    assert tree.successor(1) is None
+    assert tree.lower_bound(1) is None
 
     tree.insert(100000)
-    assert tree.successor(100000) is None
+    assert tree.lower_bound(100000).key == 100000
+    assert tree.lower_bound(100000 - 1).key == 100000
+    assert tree.lower_bound(100000 + 1) is None
 
     tree.insert(2)
     tree.insert(1)
@@ -140,23 +142,29 @@ def test_successor():
     tree.insert(5)
     tree.insert(7)
 
-    assert tree.successor(0) is None
-    assert tree.successor(1).key == 2
-    assert tree.successor(2).key == 3
-    assert tree.successor(3).key == 5
-    assert tree.successor(4) is None
-    assert tree.successor(5).key == 6
-    assert tree.successor(6).key == 7
-    assert tree.successor(7).key == 100000
-    assert tree.successor(100000) is None
+    assert tree.lower_bound(-1).key == 1
+    assert tree.lower_bound(0).key == 1
+    assert tree.lower_bound(1).key == 1
+    assert tree.lower_bound(2).key == 2
+    assert tree.lower_bound(3).key == 3
+    assert tree.lower_bound(4).key == 5
+    assert tree.lower_bound(5).key == 5
+    assert tree.lower_bound(6).key == 6
+    assert tree.lower_bound(7).key == 7
+    assert tree.lower_bound(8).key == 100000
+    assert tree.lower_bound(100000).key == 100000
+    assert tree.lower_bound(100000 - 1).key == 100000
+    assert tree.lower_bound(100000 + 1) is None
 
 
-def test_predecessor():
+def test_upper_bound():
     tree = Treap()
-    assert tree.predecessor(1) is None
+    assert tree.upper_bound(1) is None
 
     tree.insert(-100000)
-    assert tree.predecessor(-100000) is None
+    assert tree.upper_bound(-100000 - 1) is None
+    assert tree.upper_bound(-100000).key == -100000
+    assert tree.upper_bound(-100000 + 1).key == -100000
 
     tree.insert(2)
     tree.insert(1)
@@ -166,16 +174,17 @@ def test_predecessor():
     tree.insert(5)
     tree.insert(7)
 
-    assert tree.predecessor(-100000) is None
-    assert tree.predecessor(0) is None
-    assert tree.predecessor(1).key == -100000
-    assert tree.predecessor(2).key == 1
-    assert tree.predecessor(3).key == 2
-    assert tree.predecessor(4) is None
-    assert tree.predecessor(5).key == 3
-    assert tree.predecessor(6).key == 5
-    assert tree.predecessor(7).key == 6
-    assert tree.predecessor(8) is None
+    assert tree.upper_bound(-100000 - 1) is None
+    assert tree.upper_bound(-100000).key == -100000
+    assert tree.upper_bound(0).key == -100000
+    assert tree.upper_bound(1).key == 1
+    assert tree.upper_bound(2).key == 2
+    assert tree.upper_bound(3).key == 3
+    assert tree.upper_bound(4).key == 3
+    assert tree.upper_bound(5).key == 5
+    assert tree.upper_bound(6).key == 6
+    assert tree.upper_bound(7).key == 7
+    assert tree.upper_bound(8).key == 7
 
 
 def test_inorder():

@@ -44,14 +44,14 @@ class Treap:
         root (Optional[TreapNode]): 二分探索木の根
 
     Methods:
+        __contains__(self, key: int): keyが二分探索木に含まれているかどうかを返す
         search(key: int): 存在するならば二分探索木に要素k(key kを持つ要素)を返す
+        get(key: int): 存在するならば二分探索木に要素k(key kを持つ要素)を返す
         count(key: int): 二分探索木に含まれるkeyの個数を返す
         insert(key: int, num: int): 二分探索木に要素k(key kを持つ要素)を挿入する
         delete(key: int, num: int): 二分探索木から要素k(key kを持つ要素)を削除する
         min_element(): 二分探索木の最小要素を返す
         max_element(): 二分探索木の最大要素を返す
-        successor(key: int): key=kの次節点を返す
-        predecessor(key: int): key=kの前節点を返す
         lower_bound(key: int): key <= x.key となる最小のxを返す
         upper_bound(key: int): x.key <= key となる最大のxを返す
         kth_smallest_element(k: int): 二分探索木の中間順巡回でk番目に小さい要素を返す
@@ -206,6 +206,17 @@ class Treap:
         node = self._search_with_path(key)[-1]
         return node if node.key == key else None
 
+    def get(self, key: int) -> Optional[TreapNode]:
+        """keyを持つ要素を二分探索木から探索する
+
+        Args:
+            key (int): 探索したい要素のkey
+
+        Returns:
+            Optional[TreapNode]: keyを持つ要素が存在すればその要素を返す. 存在しなければNoneを返す
+        """
+        return self.search(key)
+
     def count(self, key: int) -> int:
         """二分探索木に含まれるkeyの個数を返す
 
@@ -350,76 +361,6 @@ class Treap:
         if self.root is None:
             return None
         return self._max_element_with_parent(self.root)[-1]
-
-    def successor(self, key: int) -> Optional[TreapNode]:
-        """keyの次節点を返す
-
-        Args:
-            key (int): 検索したいkey
-
-        Returns:
-            Optional[TreapNode]: key < x となる最小の要素x. keyが存在しない場合 or keyの次節点が存在しない場合はNoneを返す
-        """
-        if self.root is None:
-            return None
-
-        path = self._search_with_path(key)
-        node = path[-1]
-
-        # keyが存在しない場合
-        if node.key != key:
-            return None
-
-        # 右の子が存在する場合
-        if node.right is not None:
-            return self._min_element_with_parent(node.right)[-1]
-
-        # nodeがrootだった場合
-        if len(path) == 1:
-            return None
-
-        # nodeがparentの左の子である場合 -> parentがnodeの次節点
-        _path = path[::-1]
-        for node, parent in zip(_path, _path[1:]):
-            if parent.left is node:
-                return parent
-
-        return None
-
-    def predecessor(self, key: int) -> Optional[TreapNode]:
-        """keyの前節点を返す
-
-        Args:
-            key (int): 検索したいkey
-
-        Returns:
-            Optional[TreapNode]: key > x となる最大の要素x. keyが存在しない場合 or keyの前節点が存在しない場合はNoneを返す
-        """
-        if self.root is None:
-            return None
-
-        path = self._search_with_path(key)
-        node = path[-1]
-
-        # keyが存在しない場合
-        if node.key != key:
-            return None
-
-        # 左の子が存在する場合は左の子の最大要素が前節点
-        if node.left is not None:
-            return self._max_element_with_parent(node.left)[-1]
-
-        # nodeがrootだった場合
-        if len(path) == 1:
-            return None
-
-        # nodeがparentの右の子である場合 -> parentがnodeの前節点
-        _path = path[::-1]
-        for node, parent in zip(_path, _path[1:]):
-            if parent.right is node:
-                return parent
-
-        return None
 
     def lower_bound(self, key: int) -> Optional[TreapNode]:
         """key <= x.key となる最小のxを返す

@@ -1,8 +1,3 @@
-# https://judge.yosupo.jp/submission/161374
-# 平均的には辞書より遅いが, 変なケースでは辞書より速い (https://judge.yosupo.jp/submission/161376)
-# src/DataStructures/BinarySearchTree/Treap/treap_hashmap.pyを修正したもの
-
-import sys
 from typing import Optional, Generator, TypeVar, Generic
 from collections import deque
 from random import random
@@ -39,7 +34,7 @@ class TreapNode(Generic[K, V]):
 
 
 class TreapHashMap(Generic[K, V]):
-    """Treapを使用したハッシュマップ
+    """Treapを使用したハッシュマップ (Subtree Sizeを保持しない)
 
     Args:
         K: 二分探索木のノードに格納される要素のkeyの型 (比較可能である必要がある)
@@ -59,6 +54,12 @@ class TreapHashMap(Generic[K, V]):
         items(): 二分探索木の(key, value)をkeyに関する昇順に出力する.
         insert(key: K): 二分探索木に要素k(key kを持つ要素)を挿入する
         delete(key: K): 二分探索木から要素k(key kを持つ要素)を削除する
+        min_element(): 二分探索木の最小要素を返す
+        max_element(): 二分探索木の最大要素を返す
+        lower_bound(key: K): key <= x.key となる最小のxを返す
+        upper_bound(key: K): x.key <= key となる最大のxを返す
+        inorder(): 二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
+        preorder(): 二分探索木の先行順巡回 (二分探索木の要素を出力する)
 
     Notes:
         ヒープ条件: 親のpriority >= 子のpriority
@@ -77,7 +78,7 @@ class TreapHashMap(Generic[K, V]):
         return TreapNode(key, value)
 
     def _rotate(self, path: list[TreapNode[K, V]]):
-        """node -> root上の各頂点の情報を更新 & ヒープ条件が満たされるように回転させる
+        """node -> root上の各頂点のヒープ条件が満たされるように回転させる
 
         Args:
             path (list[TreapNode[K, V]]): [root ... -> ... node]
@@ -121,7 +122,6 @@ class TreapHashMap(Generic[K, V]):
             parent.right = new_root
         else:
             parent.left = new_root
-
         return new_root
 
     def _rotate_left(self, node: TreapNode[K, V], parent: Optional[TreapNode[K, V]]) -> TreapNode[K, V]:
@@ -147,7 +147,6 @@ class TreapHashMap(Generic[K, V]):
             parent.right = new_root
         else:
             parent.left = new_root
-
         return new_root
 
     def _search_with_path(self, key: K) -> list[TreapNode[K, V]]:
@@ -283,9 +282,6 @@ class TreapHashMap(Generic[K, V]):
             else:
                 parent = self._rotate_left(node, parent)
 
-            if parent is not None:
-                path.append(parent)
-
         # 削除
         if parent is None:
             self.root = None
@@ -295,6 +291,7 @@ class TreapHashMap(Generic[K, V]):
             parent.right = None
 
         del node
+
         return return_value
 
     def delete(self, key: K):
@@ -304,6 +301,111 @@ class TreapHashMap(Generic[K, V]):
             key (K): 削除したい要素のkey
         """
         self.pop(key)
+
+    def _min_element_with_parent(self, root: TreapNode[K, V]) -> TreapNode[K, V]:
+        """rootを根とする部分木の最小要素を返す (pathも返す)
+
+        Args:
+            root (TreapNode[K, V]): 根
+
+        Returns:
+            list[TreapNode[K, V]]: 最小要素に至る探索パス
+        """
+        node = root
+        while node.left is not None:
+            node = node.left
+        return node
+
+    def min_element(self) -> Optional[TreapNode[K, V]]:
+        """二分探索木の最小要素を返す
+
+        Returns:
+            Optional[TreapNode[K, V]]: 二分探索木の最小要素. 二分探索木が空ならばNoneを返す
+        """
+        if self.root is None:
+            return None
+        return self._min_element_with_parent(self.root)
+
+    def _max_element_with_parent(self, root: TreapNode[K, V]) -> TreapNode[K, V]:
+        """rootを根とする部分木の最大要素を返す (pathも返す)
+
+        Args:
+            root (TreapNode[K, V]): 根
+
+        Returns:
+            list[TreapNode[K, V]]: 最大要素に至る探索パス
+        """
+        node = root
+        while node.right is not None:
+            node = node.right
+        return node
+
+    def max_element(self) -> Optional[TreapNode[K, V]]:
+        """二分探索木の最大要素を返す
+
+        Returns:
+            Optional[TreapNode[K, V]]: 二分探索木の最大要素. 二分探索木が空ならばNoneを返す
+        """
+        if self.root is None:
+            return None
+        return self._max_element_with_parent(self.root)
+
+    def lower_bound(self, key: K) -> Optional[TreapNode[K, V]]:
+        """key <= x.key となる最小のxを返す
+
+        Args:
+            key (int): lower
+
+        Returns:
+            Optional[TreapNode[K, V]]: key <= x.key となる最小のx. 存在しない場合はNoneを返す
+        """
+        if self.root is None:
+            return None
+
+        # 最小値なので, 基本的に左に進む
+        node = self.root
+        # 条件を満たす最小node
+        minimum = None
+        while node is not None:
+            if node.key == key:
+                return node
+            elif node.key < key:
+                node = node.right
+            else:
+                if (minimum is None) or (node.key < minimum.key):
+                    minimum = node
+
+                node = node.left
+
+        return minimum
+
+    def upper_bound(self, key: K) -> Optional[TreapNode[K, V]]:
+        """x.key <= keyとなる最大のxを返す
+
+        Args:
+            key (int): lower
+
+        Returns:
+            Optional[TreapNode[K, V]]: x.key <= keyとなる最大のx. 存在しない場合はNoneを返す
+        """
+        if self.root is None:
+            return None
+
+        # 最大値なので, 基本的に右に進む
+        node = self.root
+        # 条件を満たす最大のnode
+        maximum = None
+        while node is not None:
+            if node.key == key:
+                return node
+            elif node.key > key:
+                node = node.left
+            else:
+                if (maximum is None) or (maximum.key < node.key):
+                    maximum = node
+                node = node.right
+
+        return maximum
 
     def __contains__(self, key: K) -> bool:
         """keyが二分探索木に含まれているかどうかを返す
@@ -400,18 +502,52 @@ class TreapHashMap(Generic[K, V]):
             if node.left is not None:
                 dq.append([node.left, False])
 
+    def inorder(self) -> Generator[TreapNode[K, V], None, None]:
+        """二分探索木の中間順巡回 (二分探索木の要素を昇順に出力する)
 
-input = sys.stdin.readline
+        Yields:
+            Generator[TreapNode[K, V], None, None]: 二分探索木の中間順巡回で得られる要素
+        """
+        if self.root is None:
+            return
 
+        dq = deque([[self.root, False]])
+        while dq:
+            node, flag = dq[-1]
 
-Q = int(input())
-tree = TreapHashMap[int, int]()
+            # nodeを既に1回探索済なら, nodeを出力しての右の子へ
+            if flag:
+                node, _ = dq.pop()
+                yield node
 
-for _ in range(Q):
-    query = list(map(int, input().split()))
-    if query[0] == 0:
-        k, v = query[1:]
-        tree[k] = v
-    else:
-        k = query[1]
-        print(tree.get(k, 0))
+                if node.right is not None:
+                    dq.append([node.right, False])
+                continue
+
+            dq[-1][1] = True
+
+            # nodeを未探索なら, 左の子へ
+            if node.left is not None:
+                dq.append([node.left, False])
+
+    def preorder(self) -> Generator[TreapNode[K, V], None, None]:
+        """二分探索木の先行順巡回 (二分探索木の要素を出力する)
+
+        Yields:
+            Generator[TreapNode[K, V], None, None]: 二分探索木の先行順巡回で得られる要素
+        """
+        if self.root is None:
+            return
+
+        dq = deque([self.root])
+        while dq:
+            node = dq.pop()
+
+            if node is None:
+                continue
+
+            yield node
+
+            # 先に右の子を追加しておく
+            dq.append(node.right)
+            dq.append(node.left)
