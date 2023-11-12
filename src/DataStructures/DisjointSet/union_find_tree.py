@@ -2,10 +2,10 @@ class UnionFindTree:
     """Union Find Tree. 以下の操作を O(a(N)) で実行する
 
     Methods:
-        - union(x, y): xを含む集合とyを含む集合をmergeする O(a(N))
-        - find(x): 要素xを含む集合を取得 O(a(N))
-        - size(x): 要素xを含む集合の要素数を取得 O(a(N))
-        - same_check(x, y): 要素x, yが同じ集合に属するかどうかの判定 O(a(N))
+        union(x, y): xを含む集合とyを含む集合をmergeする O(a(N))
+        find(x): 要素xを含む集合を取得 O(a(N))
+        size(x): 要素xを含む集合の要素数を取得 O(a(N))
+        same_check(x, y): 要素x, yが同じ集合に属するかどうかの判定 O(a(N))
     """
 
     def __init__(self, n: int):
